@@ -19,7 +19,27 @@
 
 int queue_size (queue_t *queue) 
 {
+    queue_t *aux;
+    int size;
 
+    // Check if the queue is empty
+    if(queue == NULL)
+        return 0;
+    
+    // Check if the queue has only 1 element
+    if( (queue->next == queue) && (queue->prev == queue))
+        return  1;
+
+    // Counts how many elements the queue has
+    aux = queue;
+    size = 0;
+    do 
+    {
+        i++;
+        aux = aux->next;
+    }while(aux->next != queue)
+
+    return size;
 }
 
 //------------------------------------------------------------------------------
@@ -31,7 +51,7 @@ int queue_size (queue_t *queue)
 
 void queue_print (char *name, queue_t *queue, void print_elem (void*) ) 
 {
-
+    
 }
 
 //------------------------------------------------------------------------------
@@ -58,6 +78,6 @@ int queue_append (queue_t **queue, queue_t *elem)
 
 int queue_remove (queue_t **queue, queue_t *elem) 
 {
-    
+
 }
 
