@@ -3,7 +3,7 @@
 // Definição e operações em uma fila genérica.
 
 #include "queue.h"
-
+#include <stdio.h>
 //------------------------------------------------------------------------------
 // estrutura de uma fila genérica, sem conteúdo definido.
 // Veja um exemplo de uso desta estrutura em testafila.c
@@ -25,6 +25,9 @@ int queue_size (queue_t *queue)
 
     // Check if the queue is empty
     if(queue == NULL)
+        return 0;
+
+    if(((queue->next = NULL) && (queue->prev == NULL)))
         return 0;
     
     // Check if the queue has only 1 element
@@ -52,7 +55,7 @@ int queue_size (queue_t *queue)
 
 void queue_print (char *name, queue_t *queue, void print_elem (void*) ) 
 {
-    
+    printf("Função a ser feita");
 }
 
 //------------------------------------------------------------------------------
@@ -66,6 +69,31 @@ void queue_print (char *name, queue_t *queue, void print_elem (void*) )
 int queue_append (queue_t **queue, queue_t *elem) 
 {
 
+    queue_t *aux;
+
+    aux = *queue;
+
+    // Check if the queue is empty
+    if((aux->prev) && (aux->next))
+    {
+        aux->next = aux;
+        aux->prev = aux;
+        return 1;
+    }
+
+    while(aux->next != aux->prev)
+    {
+        aux = aux->next;
+    }
+
+    
+    // To do: check this.
+    elem->next = aux->next; // elem aponta pro inicio
+    aux->next = elem;       // o "ex-ultimo" agora aponta para o ultimo
+    elem->prev = aux;
+    aux->prev = elem;
+
+    return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -79,6 +107,7 @@ int queue_append (queue_t **queue, queue_t *elem)
 
 int queue_remove (queue_t **queue, queue_t *elem) 
 {
-
+    printf("Função a ser feita");
+    return 1;
 }
 
