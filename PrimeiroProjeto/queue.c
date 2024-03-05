@@ -2,6 +2,7 @@
 // Leonardo Marin Mendes Martin, DINF UFPR
 // Definição e operações em uma fila genérica.
 
+#include "queue.h"
 
 //------------------------------------------------------------------------------
 // estrutura de uma fila genérica, sem conteúdo definido.
@@ -35,9 +36,9 @@ int queue_size (queue_t *queue)
     size = 0;
     do 
     {
-        i++;
+        size++;
         aux = aux->next;
-    }while(aux->next != queue)
+    }while(aux->next != queue);
 
     return size;
 }
