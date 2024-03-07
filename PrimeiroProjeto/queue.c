@@ -71,28 +71,34 @@ int queue_append (queue_t **queue, queue_t *elem)
 
     queue_t *aux;
 
-    aux = *queue;
-
-    // Check if the queue is empty
-    if((aux->prev) && (aux->next))
+    // The queue is empty and we should to insert 1 element
+    if(*queue == NULL)
     {
-        aux->next = aux;
-        aux->prev = aux;
+        *queue = elem;
+        elem->prev = elem;
+        elem->next = elem;
+        return 1;
+    }   
+
+    // The queue has only 1 element
+    if((*queue->next ==  *queue) (*queue->prev == *queue))
+    {
+        elem->prev = aux;
+        elem->next = aux;
+        aux->next = elem;
+        aux->prev = elem;
         return 1;
     }
 
+    // The queue has 2+ elements
+    aux = *queue;
     while(aux->next != aux->prev)
-    {
         aux = aux->next;
-    }
-
+    // Now aux is the last node of the queue 
+    elem->prev = aux->prev;    
+    elem->next = aux->next;
+    aux->next = elem;
     
-    // To do: check this.
-    elem->next = aux->next; // elem aponta pro inicio
-    aux->next = elem;       // o "ex-ultimo" agora aponta para o ultimo
-    elem->prev = aux;
-    aux->prev = elem;
-
     return 1;
 }
 
