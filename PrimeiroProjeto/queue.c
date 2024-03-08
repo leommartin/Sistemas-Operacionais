@@ -73,6 +73,11 @@ int queue_append (queue_t **queue, queue_t *elem)
 
     queue_t *aux;
 
+    if(elem->next == NULL) || (elem->prev == NULL)
+    {
+        return -1; // Error: this element belongs to other queue and needs to be removed to be appended in this queue.
+    }
+
     // The queue is empty and we should to insert 1 element
     if(*queue == NULL)
     {
