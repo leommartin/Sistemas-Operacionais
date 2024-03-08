@@ -27,6 +27,7 @@ int queue_size (queue_t *queue)
     if(queue == NULL)
         return 0;
 
+    // By the statement of this exercise, wouldn't even exist a queue
     if(((queue->next = NULL) && (queue->prev == NULL)))
         return 0;
     
@@ -37,11 +38,12 @@ int queue_size (queue_t *queue)
     // Counts how many elements the queue has
     aux = queue;
     size = 0;
-    do 
+    
+    while(aux->next != queue)
     {
         size++;
         aux = aux->next;
-    }while(aux->next != queue);
+    }
 
     return size;
 }
@@ -92,10 +94,13 @@ int queue_append (queue_t **queue, queue_t *elem)
 
     // The queue has 2+ elements
     aux = *queue;
-    while(aux->next != aux->prev)
+    while(aux->next != *queue)
         aux = aux->next;
     // Now aux is the last node of the queue 
-    elem->prev = aux->prev;    
+
+    // The new node receive the pointer "next" (the last node) of aux and the "prev" start to point to aux (the new penultimate of the queue)
+    // Now, the aux is the penultimate, so it start to point to the element (the new last node)
+    elem->prev = aux;    
     elem->next = aux->next;
     aux->next = elem;
     
