@@ -123,7 +123,44 @@ int queue_append (queue_t **queue, queue_t *elem)
 
 int queue_remove (queue_t **queue, queue_t *elem) 
 {
-    printf("Função a ser feita");
+    queue_t *aux;
+    aux = *queue;
+
+    if(*queue == NULL)
+        return -1;
+
+    // Removal of the first element of the queue
+    if(aux->prev == aux->next)
+    {
+        aux->prev = NULL;
+        aux->next = NULL;
+        *queue == NULL;
+        // To do: Verify the ptr_to_ptr   
+    }
+
+    // Removal of the last element of the queue
+
+
+    aux = *queue;
+    while(aux->next != elem)
+        aux = aux->next;
+    // Now, aux is the elem->prev
+
+    // Removal in the middle 
+    aux->next = elem->next;
+    aux = aux->next;
+    aux->prev = elem->prev;
+
+    // Reset the pointers of elem
+    elem->prev = NULL;
+    elem->next = NULL;
+
+    
+
+    // O nó prev de "elem" passa a apontar para o nó next de "elem"
+    // O nó next de "elem" passa a apontar para o next de "elem"
+
+
     return 1;
 }
 
