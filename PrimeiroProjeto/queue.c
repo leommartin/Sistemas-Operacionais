@@ -31,9 +31,9 @@ int queue_size (queue_t *queue)
     if(((queue->next = NULL) && (queue->prev == NULL)))
         return 0;
     
-    // Check if the queue has only 1 element
+    // Check if the queue has only 0 element
     if( (queue->next == queue) && (queue->prev == queue))
-        return  1;
+        return  0;
 
     // Counts how many elements the queue has
     aux = queue;
@@ -73,8 +73,9 @@ int queue_append (queue_t **queue, queue_t *elem)
 
     queue_t *aux;
 
-    if(elem->next == NULL) || (elem->prev == NULL)
+    if(elem->prev != NULL) || (elem->next != NULL)
     {
+        fprintf(stderr,"This element is invalid for queue_append(): pointer to NULL.")
         return -1; // Error: this element belongs to other queue and needs to be removed to be appended in this queue.
     }
 
@@ -84,7 +85,7 @@ int queue_append (queue_t **queue, queue_t *elem)
         *queue = elem;
         elem->prev = elem;
         elem->next = elem;
-        return 1;
+        return 0;
     }   
 
     // The queue has only 1 element
@@ -94,7 +95,7 @@ int queue_append (queue_t **queue, queue_t *elem)
         elem->next = aux;
         aux->next = elem;
         aux->prev = elem;
-        return 1;
+        return 0;
     }
 
     // The queue has 2+ elements
@@ -109,7 +110,7 @@ int queue_append (queue_t **queue, queue_t *elem)
     elem->next = aux->next;
     aux->next = elem;
     
-    return 1;
+    return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -124,43 +125,91 @@ int queue_append (queue_t **queue, queue_t *elem)
 int queue_remove (queue_t **queue, queue_t *elem) 
 {
     queue_t *aux;
-    aux = *queue;
+    int q_size;
 
     if(*queue == NULL)
-        return -1;
-
-    // Removal of the first element of the queue
-    if(aux->prev == aux->next)
     {
-        aux->prev = NULL;
-        aux->next = NULL;
-        *queue == NULL;
-        // To do: Verify the ptr_to_ptr   
+        fprintf(stderr,"Error: queue points to NULL.");
+        return -1;
     }
 
-    // Removal of the last element of the queue
+    if(elem == NULL)
+    {
+        fprintf(stderr,"Error: The element is NULL.");
+        return -1;
+    }
 
+    q_size = queue_size(queue);
+    if(q_size == 0)
+    {
+        fprintf(stderr,"Error: The queue is empty.");
+        return -1;
+    }
 
-    aux = *queue;
-    while(aux->next != elem)
-        aux = aux->next;
-    // Now, aux is the elem->prev
+    if((elem->prev == NULL) || (elem->next == NULL))
+    {
+        fprintf(stderr,"Error: This element is invalid for queue_remove(): pointer to NULL.")
+        return -1;
+    }
 
-    // Removal in the middle 
-    aux->next = elem->next;
-    aux = aux->next;
-    aux->prev = elem->prev;
+    // Removal the first element of the queue
+    if((elem->prev == queue->prev) && (elem->next == queue->next))
+    {   
+        // If there is just one element in the queue
+        if(queue->prev == queue->next)
+        {
+            elem->prev = NULL;
+            elem->next = NULL;
+            queue->prev = NULL;
+            queue->next = NULL;
+            *queue = NULL;
+            return 0;
+            // To do: Verify the ptr_to_ptr   
+        }
 
-    // Reset the pointers of elem
-    elem->prev = NULL;
-    elem->next = NULL;
-
+        // If there are many elements in the queue
+        aux = *queue->prev;
+        aux->next = *queue->next;
+        *queue = queue->next;
+        elem->prev = NULL;
+        elem->next = NULL;
+        return 0;
+    }
     
 
-    // O nó prev de "elem" passa a apontar para o nó next de "elem"
-    // O nó next de "elem" passa a apontar para o next de "elem"
+    // Removal of the last element of the queue
+    // if((elem->next == *queue) && (*queue->prev == elem))
+    // {
+    //     aux = elem->prev;
+    //     aux->next = elem->next;
+    //     first = *queue;
+    //     first->prev= aux;
+    //     return 0;
+    // }
 
+    // Removal in the middle/end
+    aux = *queue; // To do: check if it is necessary
+    int i = 0;
+    while((aux->next != elem) && (i < q_size))
+    {
+        aux = aux->next;
+        i++;
+    }
+    
+    // Now, aux is on the left of the element that we want to remove
+    if(i <= q_size)
+    {
+        aux->next = elem->next;
+        aux = aux->next;
+        aux->prev = elem->prev;
 
-    return 1;
+        // Reset the pointers of elem
+        elem->prev = NULL;
+        elem->next = NULL;
+        return 0;
+    }
+    
+    fprintf(stderr,"Error: Unknown error occurred.");
+    return -1;
 }
 
