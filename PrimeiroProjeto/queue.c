@@ -75,7 +75,7 @@ int queue_append (queue_t **queue, queue_t *elem)
 
     if(elem->prev != NULL) || (elem->next != NULL)
     {
-        fprintf(stderr,"This element is invalid for queue_append(): pointer to NULL.")
+        fprintf(stderr,"\n  Error: The element is invalid for queue_append(): pointer to NULL.\n")
         return -1; // Error: this element belongs to other queue and needs to be removed to be appended in this queue.
     }
 
@@ -129,26 +129,26 @@ int queue_remove (queue_t **queue, queue_t *elem)
 
     if(*queue == NULL)
     {
-        fprintf(stderr,"Error: queue points to NULL.");
+        fprintf(stderr,"\n  Error: queue points to NULL.\n");
         return -1;
     }
 
     if(elem == NULL)
     {
-        fprintf(stderr,"Error: The element is NULL.");
+        fprintf(stderr,"\n  Error: The element is NULL.\n");
         return -1;
     }
 
     q_size = queue_size(queue);
     if(q_size == 0)
     {
-        fprintf(stderr,"Error: The queue is empty.");
+        fprintf(stderr,"\n  Error: The queue is empty.\n");
         return -1;
     }
 
     if((elem->prev == NULL) || (elem->next == NULL))
     {
-        fprintf(stderr,"Error: This element is invalid for queue_remove(): pointer to NULL.")
+        fprintf(stderr,"\n  Error: This element is invalid for queue_remove(): pointer to NULL.\n")
         return -1;
     }
 
@@ -189,7 +189,7 @@ int queue_remove (queue_t **queue, queue_t *elem)
 
     // Removal in the middle/end
     aux = *queue; // To do: check if it is necessary
-    int i = 0;
+    int i = 1;
     while((aux->next != elem) && (i < q_size))
     {
         aux = aux->next;
@@ -197,7 +197,7 @@ int queue_remove (queue_t **queue, queue_t *elem)
     }
     
     // Now, aux is on the left of the element that we want to remove
-    if(i <= q_size)
+    if(aux->next == elem)
     {
         aux->next = elem->next;
         aux = aux->next;
@@ -209,7 +209,7 @@ int queue_remove (queue_t **queue, queue_t *elem)
         return 0;
     }
     
-    fprintf(stderr,"Error: Unknown error occurred.");
+    fprintf(stderr,"\n  Error: The element don't belongs to the queue.\n");
     return -1;
 }
 
