@@ -20,7 +20,7 @@
 
 int queue_size (queue_t *queue) 
 {
-    queue_t *aux;
+    queue_t *aux = queue;
     int size;
 
     // Check if the queue is empty
@@ -28,17 +28,15 @@ int queue_size (queue_t *queue)
         return 0;
 
     // By the statement of this exercise, wouldn't even exist a queue
-    if(((queue->next = NULL) && (queue->prev == NULL)))
+    if(((queue->next == NULL) && (queue->prev == NULL)))
         return 0;
     
-    // Check if the queue has only 0 element
-    if( (queue->next == queue) && (queue->prev == queue))
-        return  0;
+    // Check if the queue has only 1 element
+    if((queue->next == queue) && (queue->prev == queue))
+        return  1;
 
     // Counts how many elements the queue has
-    aux = queue;
-    size = 0;
-    
+    size = 1;
     while(aux->next != queue)
     {
         size++;
@@ -85,8 +83,7 @@ void queue_print (char *name, queue_t *queue, void print_elem (void*))
 
 int queue_append (queue_t **queue, queue_t *elem) 
 {
-
-    queue_t *aux = *queue;
+    // fprintf(stdout, "\nEntrada na queueappend\n");
 
     if((elem->prev != NULL) || (elem->next != NULL))
     {
@@ -94,35 +91,55 @@ int queue_append (queue_t **queue, queue_t *elem)
         return -1; // Error: this element belongs to other queue and needs to be removed to be appended in this queue.
     }
 
+    // fprintf(stdout, "\nPassou no teste 1\n");
+    
     // The queue is empty and we should to insert 1 element
     if(*queue == NULL)
     {
-        *queue = elem;
+        // fprintf(stdout, "Entrou na inserção de 1 elemento");
+        (*queue) = elem;
+        // (*queue)->prev = elem;
+        // (*queue)->next = elem;
         elem->prev = elem;
         elem->next = elem;
+        // fprintf(stdout, "\nInseriu");
         return 0;
-    }   
-
-    // The queue has only 1 element
-    if(((*queue)->next == *queue) && ((*queue)->prev == *queue))
+    } 
+    else 
     {
-        elem->prev = aux;
-        elem->next = aux;
-        aux->next = elem;
-        aux->prev = elem;
+        // Find the last element in the queue
+        queue_t *last = (*queue)->prev;
+
+        // Adjust pointers
+        last->next = elem;
+        elem->prev = last;
+        elem->next = *queue;
+        (*queue)->prev = elem;
+
+        // fprintf(stdout, "\nInseriu");
         return 0;
     }
 
-    // The queue has 2+ elements
-    while(aux->next != *queue)
-        aux = aux->next;
-    // Now aux is the last node of the queue 
+    // The queue has only 1 element
+    // if(((*queue)->next == *queue) && ((*queue)->prev == *queue))
+    // {
+    //     elem->prev = (*queue);
+    //     elem->next = (*queue);
+    //     (*queue)->prev = elem;
+    //     (*queue)->next = elem;
+    //     return 0;
+    // }
 
-    // The new node receive the pointer "next" (the last node) of aux and the "prev" start to point to aux (the new penultimate of the queue)
-    // Now, the aux is the penultimate, so it start to point to the element (the new last node)
-    elem->prev = aux;    
-    elem->next = aux->next;
-    aux->next = elem;
+    // The queue has 2+ elements
+    // while(aux->next != *queue)
+    //     aux = aux->next;
+    // // Now aux is the last node of the queue 
+
+    // // The new node receive the pointer "next" (the last node) of aux and the "prev" start to point to aux (the new penultimate of the queue)
+    // // Now, the aux is the penultimate, so it start to point to the element (the new last node)
+    // elem->prev = aux;    
+    // elem->next = aux->next;
+    // aux->next = elem;
     
     return 0;
 }
