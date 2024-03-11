@@ -58,19 +58,27 @@ void queue_print (char *name, queue_t *queue, void print_elem (void*))
     queue_t *aux = queue;
 
     // Print the string of testafila.c
-    printf("\n%s", name);
-
-    if((queue == NULL) && (queue->prev != NULL) && (queue->next != NULL))
+    printf("%s: ", name);
+    
+    if(queue != NULL)
     {
-        fprintf(stderr,"\n  Error: queue points to NULL.\n");
+        printf("[");
+        print_elem((void*)aux);
+    }
+    else 
+    {
+        printf("[]\n");
         return ;
     }
 
-    do 
+    while(aux->next != queue)
     {
-        print_elem((void*)aux);
         aux = aux->next;
-    } while(aux->next != queue);
+        printf(" ");
+        print_elem((void*)aux);
+    }
+
+    printf("]\n");
 }
 
 //------------------------------------------------------------------------------
@@ -87,7 +95,7 @@ int queue_append (queue_t **queue, queue_t *elem)
 
     if((elem->prev != NULL) || (elem->next != NULL))
     {
-        fprintf(stderr,"\n  Error: The element is invalid for queue_append(): pointer to NULL.\n");
+        fprintf(stderr,"----ERROR: The element is invalid for queue_append(): pointer to NULL.\n");
         return -1; // Error: this element belongs to other queue and needs to be removed to be appended in this queue.
     }
 
@@ -98,8 +106,6 @@ int queue_append (queue_t **queue, queue_t *elem)
     {
         // fprintf(stdout, "Entrou na inserção de 1 elemento");
         (*queue) = elem;
-        // (*queue)->prev = elem;
-        // (*queue)->next = elem;
         elem->prev = elem;
         elem->next = elem;
         // fprintf(stdout, "\nInseriu");
@@ -115,32 +121,10 @@ int queue_append (queue_t **queue, queue_t *elem)
         elem->prev = last;
         elem->next = *queue;
         (*queue)->prev = elem;
-
         // fprintf(stdout, "\nInseriu");
         return 0;
     }
 
-    // The queue has only 1 element
-    // if(((*queue)->next == *queue) && ((*queue)->prev == *queue))
-    // {
-    //     elem->prev = (*queue);
-    //     elem->next = (*queue);
-    //     (*queue)->prev = elem;
-    //     (*queue)->next = elem;
-    //     return 0;
-    // }
-
-    // The queue has 2+ elements
-    // while(aux->next != *queue)
-    //     aux = aux->next;
-    // // Now aux is the last node of the queue 
-
-    // // The new node receive the pointer "next" (the last node) of aux and the "prev" start to point to aux (the new penultimate of the queue)
-    // // Now, the aux is the penultimate, so it start to point to the element (the new last node)
-    // elem->prev = aux;    
-    // elem->next = aux->next;
-    // aux->next = elem;
-    
     return 0;
 }
 
@@ -160,26 +144,26 @@ int queue_remove (queue_t **queue, queue_t *elem)
 
     if(*queue == NULL)
     {
-        fprintf(stderr,"\n  Error: queue points to NULL.\n");
+        fprintf(stderr,"----ERROR: queue points to NULL.\n");
         return -1;
     }
 
     if(elem == NULL)
     {
-        fprintf(stderr,"\n  Error: The element is NULL.\n");
+        fprintf(stderr,"----ERROR: The element is NULL.\n");
         return -1;
     }
 
     q_size = queue_size(*queue);
     if(q_size == 0)
     {
-        fprintf(stderr,"\n  Error: The queue is empty.\n");
+        fprintf(stderr,"----ERROR: The queue is empty.\n");
         return -1;
     }
 
     if((elem->prev == NULL) || (elem->next == NULL))
     {
-        fprintf(stderr,"\n  Error: This element is invalid for queue_remove(): pointer to NULL.\n");
+        fprintf(stderr,"----ERROR: This element is invalid for queue_remove(): pointer to NULL.\n");
         return -1;
     }
 
@@ -187,24 +171,29 @@ int queue_remove (queue_t **queue, queue_t *elem)
     if((elem->prev == (*queue)->prev) && (elem->next == (*queue)->next))
     {   
         // If there is just one element in the queue
-        if((*queue)->prev == (*queue)->next)
+        if(((*queue)->prev == (*queue)->next) && (q_size == 1))
         {
             elem->prev = NULL;
             elem->next = NULL;
             (*queue)->prev = NULL;
             (*queue)->next = NULL;
-            *queue = NULL;
+            (*queue) = NULL;
+            // fprintf(stdout, "\nRemoveu o primeiro elemento da fila com um elemento\n");
             return 0;
             // To do: Verify the ptr_to_ptr   
         }
 
         // If there are many elements in the queue
-        aux = (*queue)->prev;
-        aux->next = (*queue)->next;
+        aux = (*queue)->prev;     
+        (*queue)->prev->next = (*queue)->next;
+        (*queue)->next->prev = aux;
         *queue = (*queue)->next;
-        elem->prev = NULL;
-        elem->next = NULL;
+        // (*queue)->prev = aux;
 
+        elem->prev = NULL;          // reset de element
+        elem->next = NULL;          // reset de element
+
+        // fprintf(stdout, "\nRemoveu o primeiro elemento da fila +1 elementos\n");
         return 0;
     }
     
@@ -241,7 +230,7 @@ int queue_remove (queue_t **queue, queue_t *elem)
         return 0;
     }
     
-    fprintf(stderr,"\n  Error: The element don't belongs to the queue.\n");
+    fprintf(stderr,"----ERROR: The element don't belongs to the queue.\n");
     return -1;
 }
 
