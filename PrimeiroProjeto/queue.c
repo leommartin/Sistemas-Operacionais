@@ -57,12 +57,12 @@ int queue_size (queue_t *queue)
 
 void queue_print (char *name, queue_t *queue, void print_elem (void*)) 
 {
-    queue_t *aux = *queue;
+    queue_t *aux = queue;
 
     // Print the string of testafila.c
     printf("\n%s", name);
 
-    if((*queue == NULL) && (queue->prev != NULL) && (queue->next != NULL))
+    if((queue == NULL) && (queue->prev != NULL) && (queue->next != NULL))
     {
         fprintf(stderr,"\n  Error: queue points to NULL.\n");
         return ;
@@ -88,9 +88,9 @@ int queue_append (queue_t **queue, queue_t *elem)
 
     queue_t *aux;
 
-    if(elem->prev != NULL) || (elem->next != NULL)
+    if((elem->prev != NULL) || (elem->next != NULL))
     {
-        fprintf(stderr,"\n  Error: The element is invalid for queue_append(): pointer to NULL.\n")
+        fprintf(stderr,"\n  Error: The element is invalid for queue_append(): pointer to NULL.\n");
         return -1; // Error: this element belongs to other queue and needs to be removed to be appended in this queue.
     }
 
@@ -104,7 +104,7 @@ int queue_append (queue_t **queue, queue_t *elem)
     }   
 
     // The queue has only 1 element
-    if((*queue->next ==  *queue) (*queue->prev == *queue))
+    if((*queue->next == *queue) && (*queue->prev == *queue))
     {
         elem->prev = aux;
         elem->next = aux;
