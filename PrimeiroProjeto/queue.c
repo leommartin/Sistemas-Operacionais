@@ -55,9 +55,24 @@ int queue_size (queue_t *queue)
 //
 // void print_elem (void *ptr) ; // ptr aponta para o elemento a imprimir
 
-void queue_print (char *name, queue_t *queue, void print_elem (void*) ) 
+void queue_print (char *name, queue_t *queue, void print_elem (void*)) 
 {
-    printf("Função a ser feita");
+    queue_t *aux = *queue;
+
+    // Print the string of testafila.c
+    printf("\n%s", name);
+
+    if((*queue == NULL) && (queue->prev != NULL) && (queue->next != NULL))
+    {
+        fprintf(stderr,"\n  Error: queue points to NULL.\n");
+        return ;
+    }
+
+    do 
+    {
+        print_elem((void*)aux);
+        aux = aux->next;
+    } while(aux->next != queue);
 }
 
 //------------------------------------------------------------------------------
