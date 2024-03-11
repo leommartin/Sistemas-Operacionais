@@ -86,7 +86,7 @@ void queue_print (char *name, queue_t *queue, void print_elem (void*))
 int queue_append (queue_t **queue, queue_t *elem) 
 {
 
-    queue_t *aux;
+    queue_t *aux = *queue;
 
     if((elem->prev != NULL) || (elem->next != NULL))
     {
@@ -104,7 +104,7 @@ int queue_append (queue_t **queue, queue_t *elem)
     }   
 
     // The queue has only 1 element
-    if((*queue->next == *queue) && (*queue->prev == *queue))
+    if(((*queue)->next == *queue) && ((*queue)->prev == *queue))
     {
         elem->prev = aux;
         elem->next = aux;
@@ -114,7 +114,6 @@ int queue_append (queue_t **queue, queue_t *elem)
     }
 
     // The queue has 2+ elements
-    aux = *queue;
     while(aux->next != *queue)
         aux = aux->next;
     // Now aux is the last node of the queue 
@@ -154,7 +153,7 @@ int queue_remove (queue_t **queue, queue_t *elem)
         return -1;
     }
 
-    q_size = queue_size(queue);
+    q_size = queue_size(*queue);
     if(q_size == 0)
     {
         fprintf(stderr,"\n  Error: The queue is empty.\n");
@@ -163,31 +162,32 @@ int queue_remove (queue_t **queue, queue_t *elem)
 
     if((elem->prev == NULL) || (elem->next == NULL))
     {
-        fprintf(stderr,"\n  Error: This element is invalid for queue_remove(): pointer to NULL.\n")
+        fprintf(stderr,"\n  Error: This element is invalid for queue_remove(): pointer to NULL.\n");
         return -1;
     }
 
     // Removal the first element of the queue
-    if((elem->prev == queue->prev) && (elem->next == queue->next))
+    if((elem->prev == (*queue)->prev) && (elem->next == (*queue)->next))
     {   
         // If there is just one element in the queue
-        if(queue->prev == queue->next)
+        if((*queue)->prev == (*queue)->next)
         {
             elem->prev = NULL;
             elem->next = NULL;
-            queue->prev = NULL;
-            queue->next = NULL;
+            (*queue)->prev = NULL;
+            (*queue)->next = NULL;
             *queue = NULL;
             return 0;
             // To do: Verify the ptr_to_ptr   
         }
 
         // If there are many elements in the queue
-        aux = *queue->prev;
-        aux->next = *queue->next;
-        *queue = queue->next;
+        aux = (*queue)->prev;
+        aux->next = (*queue)->next;
+        *queue = (*queue)->next;
         elem->prev = NULL;
         elem->next = NULL;
+
         return 0;
     }
     
