@@ -1,5 +1,5 @@
+// GRR20205675 Leonardo Marin Mendes Martin
 // PingPongOS - PingPong Operating System
-// Leonardo Marin Mendes Martin, DINF UFPR
 // Definição e operações em uma fila genérica.
 
 #include "queue.h"
@@ -7,12 +7,6 @@
 //------------------------------------------------------------------------------
 // estrutura de uma fila genérica, sem conteúdo definido.
 // Veja um exemplo de uso desta estrutura em testafila.c
-
-// typedef struct queue_t
-// {
-//    struct queue_t *prev ;  // aponta para o elemento anterior na fila
-//    struct queue_t *next ;  // aponta para o elemento seguinte na fila
-// } queue_t ;
 
 //------------------------------------------------------------------------------
 // Conta o numero de elementos na fila
@@ -91,39 +85,30 @@ void queue_print (char *name, queue_t *queue, void print_elem (void*))
 
 int queue_append (queue_t **queue, queue_t *elem) 
 {
-    // fprintf(stdout, "\nEntrada na queueappend\n");
-
     if((elem->prev != NULL) || (elem->next != NULL))
     {
-        fprintf(stderr,"----ERROR: The element is invalid for queue_append(): pointer to NULL.\n");
+        fprintf(stderr,"----ERROR: The element is invalid for queue_append(): the element already belongs to a queue.\n");
         return -1; // Error: this element belongs to other queue and needs to be removed to be appended in this queue.
     }
-
-    // fprintf(stdout, "\nPassou no teste 1\n");
     
     // The queue is empty and we should to insert 1 element
     if(*queue == NULL)
     {
-        // fprintf(stdout, "Entrou na inserção de 1 elemento");
         (*queue) = elem;
         elem->prev = elem;
         elem->next = elem;
-        // fprintf(stdout, "\nInseriu");
         return 0;
     } 
-    else 
-    {
-        // Find the last element in the queue
-        queue_t *last = (*queue)->prev;
 
-        // Adjust pointers
-        last->next = elem;
-        elem->prev = last;
-        elem->next = *queue;
-        (*queue)->prev = elem;
-        // fprintf(stdout, "\nInseriu");
-        return 0;
-    }
+    // Find the last element in the queue
+    queue_t *last = (*queue)->prev;
+
+    // Adjust pointers
+    last->next = elem;
+    elem->prev = last;
+    elem->next = *queue;
+    (*queue)->prev = elem;
+    return 0;
 
     return 0;
 }
@@ -144,7 +129,7 @@ int queue_remove (queue_t **queue, queue_t *elem)
 
     if(*queue == NULL)
     {
-        fprintf(stderr,"----ERROR: queue points to NULL.\n");
+        fprintf(stderr,"----ERROR: *queue points to NULL.\n");
         return -1;
     }
 
@@ -178,9 +163,7 @@ int queue_remove (queue_t **queue, queue_t *elem)
             (*queue)->prev = NULL;
             (*queue)->next = NULL;
             (*queue) = NULL;
-            // fprintf(stdout, "\nRemoveu o primeiro elemento da fila com um elemento\n");
             return 0;
-            // To do: Verify the ptr_to_ptr   
         }
 
         // If there are many elements in the queue
@@ -188,28 +171,16 @@ int queue_remove (queue_t **queue, queue_t *elem)
         (*queue)->prev->next = (*queue)->next;
         (*queue)->next->prev = aux;
         *queue = (*queue)->next;
-        // (*queue)->prev = aux;
 
-        elem->prev = NULL;          // reset de element
-        elem->next = NULL;          // reset de element
+        // Reset the element
+        elem->prev = NULL;          
+        elem->next = NULL;         
 
-        // fprintf(stdout, "\nRemoveu o primeiro elemento da fila +1 elementos\n");
         return 0;
     }
-    
-
-    // Removal of the last element of the queue
-    // if((elem->next == *queue) && (*queue->prev == elem))
-    // {
-    //     aux = elem->prev;
-    //     aux->next = elem->next;
-    //     first = *queue;
-    //     first->prev= aux;
-    //     return 0;
-    // }
 
     // Removal in the middle/end
-    aux = *queue; // To do: check if it is necessary
+    aux = *queue;
     int i = 1;
     while((aux->next != elem) && (i < q_size))
     {
@@ -230,7 +201,7 @@ int queue_remove (queue_t **queue, queue_t *elem)
         return 0;
     }
     
-    fprintf(stderr,"----ERROR: The element don't belongs to the queue.\n");
+    fprintf(stderr,"----ERROR: The element don't belongs to this queue.\n");
     return -1;
 }
 
