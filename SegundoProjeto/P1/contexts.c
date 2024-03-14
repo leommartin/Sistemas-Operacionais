@@ -59,11 +59,14 @@ void BodyPong (void * arg)
 
 int main (int argc, char *argv[])
 {
+   // ucontext_t ContextPing, ContextPong, ContextMain ;
+   
    char *stack ;
 
    printf ("main: inicio\n") ;
 
-   getcontext (&ContextPing) ;
+   getcontext (&ContextPing);
+   // Captura o contexto atual e o armazena em ContextPing
 
    stack = malloc (STACKSIZE) ;
    if (stack)
@@ -80,8 +83,10 @@ int main (int argc, char *argv[])
    }
 
    makecontext (&ContextPing, (void*)(*BodyPing), 1, "    Ping") ;
+   // Associa a função BodyPing() ao contexto da thread Ping.
 
    getcontext (&ContextPong) ;
+   // Captura o contexto atual e o armazena em ContextPong
 
    stack = malloc (STACKSIZE) ;
    if (stack)
@@ -98,11 +103,17 @@ int main (int argc, char *argv[])
    }
 
    makecontext (&ContextPong, (void*)(*BodyPong), 1, "        Pong") ;
+   // Associa a função BodyPing() ao contexto da thread Pong.
 
+   // Troca do contexto principal para Ping
    swapcontext (&ContextMain, &ContextPing) ;
+   // Várias trocas de contexto de Ping para Pong e retorno ao ContextMain.
+
+   // Trocas de contexto principal para Pong
    swapcontext (&ContextMain, &ContextPong) ;
+   // Várias trocas de contexto de Pong para Ping e retorno ao ContextMain.
+
 
    printf ("main: fim\n") ;
-
    exit (0) ;
 }
