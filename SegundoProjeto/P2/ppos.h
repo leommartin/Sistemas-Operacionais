@@ -50,7 +50,7 @@ int task_switch (task_t *task) ;
 
 // suspende a tarefa atual,
 // transferindo-a da fila de prontas para a fila "queue"
-void task_suspend (task_t **queue) ;
+void task_suspend (task_t **queue);
 
 // acorda a tarefa indicada,
 // trasferindo-a da fila "queue" para a fila de prontas
