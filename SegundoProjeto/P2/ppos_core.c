@@ -2,20 +2,16 @@
 #include <stdlib.h>
 #include "ppos.h"
 
-#define STACKSIZE 64*1024	/* tamanho de pilha das threads */
-
-task_t main_task;
-task_t current_task;
 
 // Inicializa o sistema operacional; deve ser chamada no inicio do main()
 void ppos_init ()
 {
     main_task.id = 0;
-    main_task.prev = NULL;
-    main_task.next = NULL;
     main_task.status = 1;
 
-    // current_task = main_task; id?
+    current_task.id = main_task.id;
+
+    setvbuf (stdout, 0, _IONBF, 0);
 }
 
 // gerência de tarefas =========================================================
@@ -32,18 +28,20 @@ int task_init (task_t *task, void  (*start_func)(void *), void   *arg)
    stack = malloc (STACKSIZE) ;
    if (stack)
    {
-      task->context.uc_stack.ss_sp = stack;
-      task->context.uc_stack.ss_size = STACKSIZE ;
-      task->context.uc_stack.ss_flags = 0 ;
-      task->context.uc_link = 0 ;
+        task->context.uc_stack.ss_sp = stack;
+        task->context.uc_stack.ss_size = STACKSIZE ;
+        task->context.uc_stack.ss_flags = 0 ;
+        task->context.uc_link = 0 ;
    }
    else
    {
-      perror ("Erro na criação da pilha: ") ;
-      exit (1) ;
+        perror ("Erro na criação da pilha: ") ;
+        // exit (1) ;
+        return 1;
    }
 
    makecontext (&(task->context), start_func, 1, (char *)arg) ;
+   return 0;
 }			
 
 // alterna a execução para a tarefa indicada
@@ -66,5 +64,8 @@ int task_id()
 }
 
 // Termina a tarefa corrente com um status de encerramento
-void task_exit (int exit_code) ;
+void task_exit (int exit_code) 
+{
+    task_switch(&main_task);
+}
 

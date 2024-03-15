@@ -27,6 +27,11 @@
 #error "Please do not use optimization (-O1, -O2, ...)"
 #endif
 
+#define STACKSIZE 64*1024	/* tamanho de pilha das threads */
+
+task_t main_task;
+task_t current_task;
+
 // funções gerais ==============================================================
 
 // Inicializa o sistema operacional; deve ser chamada no inicio do main()
