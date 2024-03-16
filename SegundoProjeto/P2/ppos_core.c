@@ -2,10 +2,21 @@
 #include <stdlib.h>
 #include "ppos.h"
 
+#define STACKSIZE 64*1024	/* tamanho de pilha das threads */
+
+task_t main_task;
+task_t current_task;
+ucontext_t old_context;
+
 
 // Inicializa o sistema operacional; deve ser chamada no inicio do main()
 void ppos_init ()
 {
+    ucontext_t context;
+
+    getcontext(&context);
+    current_task.context = context;
+
     main_task.id = 0;
     main_task.status = 1;
 
@@ -40,14 +51,17 @@ int task_init (task_t *task, void  (*start_func)(void *), void   *arg)
         return 1;
    }
 
-   makecontext (&(task->context), start_func, 1, (char *)arg) ;
+   makecontext (&(task->context),(void (*)())start_func, 1, (char *)arg) ;
    return 0;
 }			
 
 // alterna a execução para a tarefa indicada
 int task_switch (task_t *task) 
 {
-    if(swapcontext (&current_task, task))
+
+    old_context = current_task.context;
+
+    if(swapcontext(&old_context, &task->context))
     {
         current_task = *task;
         return 0;
@@ -67,5 +81,6 @@ int task_id()
 void task_exit (int exit_code) 
 {
     task_switch(&main_task);
+    main_task.status = 0;
 }
 

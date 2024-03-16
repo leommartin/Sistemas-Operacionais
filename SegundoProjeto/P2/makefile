@@ -1,32 +1,36 @@
-# Nome do executável
-EXECUTABLE = test_contexts
-
-# Compilador
+# Compiler
 CC = gcc
 
-# Flags de compilação
-CFLAGS = -Wall -Wextra -std=c99
+# Compiler flags
+CFLAGS = -Wall -g
 
-# Flag de debug
-DEBUG_FLAGS = -g
+# Source files
+SRCS = ppos_core.c pingpong-tasks1.c
 
-# Arquivos fonte
-SOURCES = ppos_core.c
+# Object files
+OBJS = $(SRCS:.c=.o)
 
-# Arquivos header
-HEADERS = ppos.h ppos_data.h
+# Dependency files
+DEPS = ppos.h ppos_data.h
 
-# Objetos
-OBJECTS = $(SOURCES:.c=.o)
+# Executable
+EXEC = test_contexts
 
-# Regras de compilação
-$(EXECUTABLE): $(OBJECTS)
-	$(CC) $(CFLAGS) $(DEBUG_FLAGS) -o $@ $^
+# Default target
+all: $(EXEC)
 
-# Regra de compilação para objetos
-%.o: %.c $(HEADERS)
-	$(CC) $(CFLAGS) $(DEBUG_FLAGS) -c -o $@ $<
+# Rule to generate executable
+$(EXEC): $(OBJS)
+	$(CC) $(CFLAGS) $^ -o $@
 
-# Limpeza
+# Rule to compile C source files
+%.o: %.c $(DEPS)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Phony target to clean up object files and executable
 clean:
-	rm -f $(EXECUTABLE) $(OBJECTS)
+	rm -f $(OBJS) $(EXEC)
+
+# Debug target
+debug: CFLAGS += -DDEBUG
+debug: all
