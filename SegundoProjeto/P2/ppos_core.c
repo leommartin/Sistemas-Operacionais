@@ -3,6 +3,7 @@
 #include "ppos.h"
 
 #define STACKSIZE 64*1024	/* tamanho de pilha das threads */
+#define ID_MAIN 0
 #define NEW 1
 #define READY 2
 #define RUNNING 3
@@ -10,6 +11,7 @@
 #define TERMINATED 5
 
 // task_t *main_task;
+int id = 1;
 task_t main_task;
 task_t *current_task;
 task_t *old_context;
@@ -40,18 +42,18 @@ void ppos_init ()
     //         exit (1) ;
     // }  
 
-    main_task.id = 0;
+    main_task.id = ID_MAIN;
     main_task.status = RUNNING;  
     
-    fprintf(stdout, "\n---Main task: %d", main_task.id);
-    fprintf(stdout, "\n---Status: %d", main_task.status);
-    fprintf(stdout, "\n");
+    // fprintf(stdout, "\n---Main task: %d", main_task.id);
+    // fprintf(stdout, "\n---Status: %d", main_task.status);
+    // fprintf(stdout, "\n");
 
     current_task = &main_task;
 
-    fprintf(stdout, "\n---Current task: %d", current_task->id);
-    fprintf(stdout, "\n---Status: %d", current_task->status);
-    fprintf(stdout, "\n");
+    // fprintf(stdout, "\n---Current task: %d", current_task->id);
+    // fprintf(stdout, "\n---Status: %d", current_task->status);
+    // fprintf(stdout, "\n");
 
     setvbuf (stdout, 0, _IONBF, 0);
 }
@@ -81,6 +83,9 @@ int task_init (task_t *task, void  (*start_func)(void *), void   *arg)
         exit (1) ;
    }
 
+   task->id = id++;
+   task->status = READY;
+
    makecontext (&(task->context),(void (*)())start_func, 1, (char *)arg);
    return 0;
 }			
@@ -88,8 +93,12 @@ int task_init (task_t *task, void  (*start_func)(void *), void   *arg)
 // alterna a execução para a tarefa indicada
 int task_switch(task_t *task)
 {
+    current_task->status = SUSPEND;
+
     old_context = current_task;
     current_task = task;
+
+    current_task->status = RUNNING;
 
     // Troca o contexto para a tarefa indicada
     swapcontext(&(old_context->context), &(task->context));

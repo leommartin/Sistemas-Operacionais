@@ -1,36 +1,37 @@
-# Compiler
 CC = gcc
-
-# Compiler flags
 CFLAGS = -Wall -g
+LDFLAGS = -pthread
 
-# Source files
-SRCS = ppos_core.c pingpong-tasks1.c
+# Lista de arquivos fonte
+SRCS = ppos_core.c pingpong-tasks1.c pingpong-tasks2.c pingpong-tasks3.c
 
-# Object files
+# Lista de arquivos objeto
 OBJS = $(SRCS:.c=.o)
 
-# Dependency files
-DEPS = ppos.h ppos_data.h
+# Nome do executável de teste
+EXEC1 = test_context1
+EXEC2 = test_context2
+EXEC3 = test_context3
 
-# Executable
-EXEC = test_contexts
+# Regras de compilação
+all: $(EXEC1) $(EXEC2) $(EXEC3)
 
-# Default target
-all: $(EXEC)
+$(EXEC1): ppos_core.o pingpong-tasks1.o
+	$(CC) $(LDFLAGS) $^ -o $@
 
-# Rule to generate executable
-$(EXEC): $(OBJS)
-	$(CC) $(CFLAGS) $^ -o $@
+$(EXEC2): ppos_core.o pingpong-tasks2.o
+	$(CC) $(LDFLAGS) $^ -o $@
 
-# Rule to compile C source files
-%.o: %.c $(DEPS)
+$(EXEC3): ppos_core.o pingpong-tasks3.o
+	$(CC) $(LDFLAGS) $^ -o $@
+
+%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Phony target to clean up object files and executable
-clean:
-	rm -f $(OBJS) $(EXEC)
-
-# Debug target
 debug: CFLAGS += -DDEBUG
 debug: all
+
+clean:
+	rm -f $(OBJS) $(EXEC1) $(EXEC2) $(EXEC3)
+
+.PHONY: all debug clean
