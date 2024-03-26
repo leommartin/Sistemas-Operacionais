@@ -3,18 +3,18 @@ CFLAGS = -Wall -g
 LDFLAGS = -pthread
 
 # Lista de arquivos fonte
-SRCS = ppos_core.c pingpong-dispatcher.c
+SRCS = ppos_core.c pingpong-dispatcher.c queue.c
 
 # Lista de arquivos objeto
 OBJS = $(SRCS:.c=.o)
 
 # Nome do executável de teste
-EXEC1 = task_queue
+EXEC = test_dispatcher
 
 # Regras de compilação
-all: $(EXEC1)
+all: $(EXEC)
 
-$(EXEC1): ppos_core.o pingpong-dispatcher.o
+$(EXEC): $(OBJS)
 	$(CC) $(LDFLAGS) $^ -o $@
 
 %.o: %.c
@@ -24,6 +24,6 @@ debug: CFLAGS += -DDEBUG
 debug: all
 
 clean:
-	rm -f $(OBJS) $(EXEC1)
+	rm -f $(OBJS) $(EXEC)
 
 .PHONY: all debug clean

@@ -18,6 +18,7 @@ int userTasks = 0; // size of the queue = number of tasks created
 // task_t main_task;
 queue_t *task_queue = NULL;
 
+task_t main_task;
 task_t *current_task;
 task_t *old_task;
 task_t *disp;
@@ -43,36 +44,44 @@ void dispacher()
     while(userTasks > 0)
     {
         // Scheduler choose the next task to execute
-        old_task = current_task;
         task_t* prox = scheduler();
 
         if(prox != NULL)
             task_switch(prox);
-        else
+
+        task_exit(prox->id);
+        
+        switch (prox->status)
         {
-            queue_remove(&task_queue, (queue_t*)old_task);
-            free(old_task->context.uc_stack.ss_sp);
-            old_task->context.uc_stack.ss_size = 0;
-            task_exit(0);
-        }
-            
+            case READY:
+                break;
+
+            case TERMINATED:                
+                queue_remove(&task_queue, (queue_t*)old_task);
+                free(old_task->context.uc_stack.ss_sp);
+                old_task->context.uc_stack.ss_size = 0;
+                userTasks--;
+                break;
+
+            default:
+                break;
+        }       
     }
+
+    task_exit(0);
 
     // When the task comes to an end, the control return to dispatcher
     // and it destroy the task (free the memory allocated)
 
-    // Switch between the tasks
-
-    // task_exit(); call exit?!
 }
 
 // Inicializa o sistema operacional; deve ser chamada no inicio do main()
 void ppos_init ()
 {
-    // main_task.id = ID_MAIN;
-    // main_task.status = RUNNING;  
+    main_task.id = ID_MAIN;
+    main_task.status = RUNNING;  
 
-    task_init(disp, dispacher, "Dispatcher");
+    task_init(disp, dispacher, NULL);
 
     current_task = disp;
 
@@ -88,43 +97,36 @@ int task_init (task_t *task, void  (*start_func)(void *), void   *arg)
     char *stack;
 
     getcontext (&(task->context));
-   // Captura o contexto atual e o armazena em ContextPing
+    // Captura o contexto atual e o armazena em ContextPing
 
-   stack = malloc (STACKSIZE) ;
-   if (stack)
-   {
-        task->context.uc_stack.ss_sp = stack;
-        task->context.uc_stack.ss_size = STACKSIZE ;
-        task->context.uc_stack.ss_flags = 0 ;
-        task->context.uc_link = 0 ;
-   }
-   else
-   {
-        perror ("Erro na criação da pilha: ") ;
-        exit (1) ;
-   }
+    stack = malloc (STACKSIZE) ;
+    if (stack)
+    {
+            task->context.uc_stack.ss_sp = stack;
+            task->context.uc_stack.ss_size = STACKSIZE ;
+            task->context.uc_stack.ss_flags = 0 ;
+            task->context.uc_link = 0 ;
+    }
+    else
+    {
+            perror ("Erro na criação da pilha: ") ;
+            exit (1) ;
+    }
 
-   task->id = id++;
-   task->status = READY;
-   userTasks++;
+    task->id = id++;
+    task->status = READY;
+    userTasks++;
 
-   makecontext (&(task->context),(void (*)())start_func, 1, (char *)arg);
-   queue_append(&task_queue, (queue_t*)task);
+    makecontext (&(task->context),(void (*)())start_func, 1, (char *)arg);
+    queue_append(&task_queue, (queue_t*)task);
 
-   return 0;
+    return 0;
 }			
 
 // alterna a execução para a tarefa indicada
 int task_switch(task_t *task)
 {
-    // current_task->status = READY;
     old_task = current_task;
-    old_task->status = TERMINATED;
-    userTasks--;
-
-    queue_remove((&task_queue, (*queue_t)old_task));
-    free(old_task->context.uc_stack.ss_sp);
-    old_task->context.uc_stack.ss_size = 0;
 
     current_task = task;
     current_task->status = RUNNING;
@@ -144,8 +146,15 @@ int task_id()
 // Termina a tarefa corrente com um status de encerramento
 void task_exit (int exit_code) 
 {
-    task_switch(&main_task);
-    main_task.status = TERMINATED;
+    if(exit_code == 0)
+    {
+        main_task.status = TERMINATED;
+        task_switch(&main_task);
+    }
+    else
+    {
+        task_switch(disp);
+    }
 }
 
 // a tarefa atual libera o processador para outra tarefa
