@@ -31,3 +31,6 @@ usuário a executar.
 
 // Quando o dispatcher encerrar, a chamada task_exit deve 
 encerrar o programa chamando exit.
+
+
+
