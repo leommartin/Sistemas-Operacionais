@@ -1,0 +1,7 @@
+Bom Dia/Tarde/Noite professor. 
+
+Estou fazendo o esboço do P3 e fiquei com algumas dúvidas:
+
+Como usamos a política FCFS, as tarefas devem ir pra fila em ordem no task_init
+ou no task_yield? 
+
