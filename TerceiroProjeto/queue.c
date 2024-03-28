@@ -205,3 +205,15 @@ int queue_remove (queue_t **queue, queue_t *elem)
     return -1;
 }
 
+void print_elem (void *ptr)
+{
+   filaint_t *elem = ptr ;
+
+   if (!elem)
+      return ;
+
+   elem->prev ? printf ("%d", elem->prev->id) : printf ("*") ;
+   printf ("<%d>", elem->id) ;
+   elem->next ? printf ("%d", elem->next->id) : printf ("*") ;
+}
+

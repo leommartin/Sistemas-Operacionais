@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -g
-LDFLAGS = -pthread
+# LDFLAGS = -pthread
 
 # Lista de arquivos fonte
 SRCS = ppos_core.c pingpong-dispatcher.c queue.c
