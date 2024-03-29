@@ -1,0 +1,17 @@
+Bom Dia/Tarde/Noite professor. 
+
+Estou fazendo o esboço do P3 e fiquei com algumas dúvidas:
+
+Como usamos a política FCFS, as tarefas devem ir pra fila em ordem no task_init
+ou no task_yield? 
+
+Outra coisa que me causou confusão é que: o dispatcher encerra quando a função
+teste se a próxima tarefa é nula (fila vazia). No entanto, se quando há tarefas eu faço
+um task_switch para a próxima tarefa, como eu vou fazer um swap_context se ao que me parece
+preciso destruir a tarefa que deixará de ser executada? (a old_task do task_switch())
+
+Talvez com o código fique mais fácil de entender:
+
+
+
+

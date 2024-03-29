@@ -1,0 +1,36 @@
+// tarefa dispatcher, responsável pelo controle geral
+// função scheduler, determina qual a próxima tarefa a 
+executar a cada troca de contexto
+
+// task_yield() para a execução da tarefa atual e 
+retorna ao dispatcher
+
+// coloca a tarefa atual no fim da fila de prontas 
+// muda o estado da tarefa atual para PRONTA
+// devolve a CPU ao despachante
+
+// Sugestão: use a função task_switch() para 
+implementar task_yield(). 
+
+// O dispatcher deve ser implementado como uma tarefa, 
+a ser iniciada usando a chamada task_init durante a 
+inicialização do sistema (execução de ppos_init).
+
+// O programa principal inicia todas as tarefas de 
+usuário e passa o controle para a tarefa dispatcher, 
+que só encerra quando não existirem mais tarefas de 
+usuário a executar.
+
+// Será necessário implementar uma fila de tarefas prontas,
+ usando a biblioteca de filas genéricas desenvolvida anteriormente.
+
+// Politica de escalonamento: FCFS, first come first served
+
+// Quando uma tarefa encerrar, o controle volta ao dispatcher
+ e este libera as estruturas de dados alocadas para a tarefa.
+
+// Quando o dispatcher encerrar, a chamada task_exit deve 
+encerrar o programa chamando exit.
+
+
+
