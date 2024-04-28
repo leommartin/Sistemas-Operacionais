@@ -15,13 +15,6 @@
 //------------------------------------------------------------------------------
 // estrutura de uma fila genérica, sem conteúdo definido.
 // Veja um exemplo de uso desta estrutura em testafila.c
-typedef struct filaint_t
-{
-   struct filaint_t *prev ;  // ptr para usar cast com queue_t
-   struct filaint_t *next ;  // ptr para usar cast com queue_t
-   int id ;
-   // outros campos podem ser acrescidos aqui
-} filaint_t ;
 
 typedef struct queue_t
 {

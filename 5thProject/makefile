@@ -3,7 +3,7 @@ CFLAGS = -Wall -g
 # LDFLAGS = -pthread
 
 # Lista de arquivos fonte
-SRCS = ppos_core.c pingpong-scheduler.c queue.c
+SRCS = ppos_core.c pingpong-preempcao.c queue.c
 
 # Lista de arquivos objeto
 OBJS = $(SRCS:.c=.o)
