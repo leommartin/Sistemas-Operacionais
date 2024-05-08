@@ -1,3 +1,0 @@
-As poucas diferenças entre a saída deste projeto e a saída esperada se dão pelo uso de "<=" ao caminhar pela fila e comparar a maior prioridade que se
-tem até o momento com a prioridade da tarefa atual,
-fazendo com que o desempate entre duas tarefas de mesma prioridade dinâmica seja a tarefa mais recente (que provavelmente tem maior prioridade estática).

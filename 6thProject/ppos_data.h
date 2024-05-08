@@ -22,6 +22,9 @@ typedef struct task_t
   int dynamic_prio;
   int type;
   int quantum_timer;
+  int execution_time;
+  int processing_time;
+  int num_activations;
   // ... (outros campos serão adicionados mais tarde)
 } task_t ;
 

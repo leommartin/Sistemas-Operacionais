@@ -1,0 +1,8 @@
+Ao executar o comando "make" são gerados dois executáveis de teste: "test_contab" e "test_contab_prio".
+
+test_contab: teste sem uso de prioridades.
+test_contab_prio: teste com uso de prioridades.
+
+Ambos os testes foram retirados do enunciado do projeto.
+
+Obs: Quantum utilizado foi de 10 (que se não me engano, foi o indicado no vídeo do projeto).
