@@ -8,6 +8,8 @@
 #define __PPOS_DATA__
 
 #include <ucontext.h>		// biblioteca POSIX de trocas de contexto
+#include <signal.h>     // biblioteca para tratar sinais
+#include <sys/time.h>   // biblioteca para gerar os clock ticks
 
 // Estrutura que define um Task Control Block (TCB)
 typedef struct task_t
@@ -20,6 +22,9 @@ typedef struct task_t
   int dynamic_prio;
   int type;
   int quantum_timer;
+  int execution_time;
+  int processing_time;
+  int num_activations;
   // ... (outros campos serão adicionados mais tarde)
 } task_t ;
 
