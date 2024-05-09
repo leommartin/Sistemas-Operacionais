@@ -480,5 +480,82 @@ int task_getprio (task_t *task)
 }
 
 
+/*
+    Suspende a tarefa atual através das seguintes ações:
+
+    retira a tarefa atual da fila de tarefas prontas (se estiver nela);
+    ajusta o status da tarefa atual para “suspensa”;
+    insere a tarefa atual na fila apontada por queue (se essa fila não for nula);
+    retorna ao dispatcher.
+*/
+// suspende a tarefa atual,
+// transferindo-a da fila de prontas para a fila "queue"
+void task_suspend (task_t **queue)
+{
+    if(queue != NULL)
+    {
+        queue_append(queue, (queue_t*) current_task);
+    }
+
+    current_task->status = SUSPEND;
+
+    if(current_task->id > 1)
+    {
+        queue_remove(&task_queue, (queue_t*)current_task);
+    }
+
+    task_switch(disp);
+}
+
+/*
+    Acorda uma tarefa que está suspensa em uma dada fila, através das seguintes ações:
+
+    se a fila queue não for nula, retira a tarefa apontada por task dessa fila;
+    ajusta o status dessa tarefa para “pronta”;
+    insere a tarefa na fila de tarefas prontas;
+    continua a tarefa atual (não retorna ao dispatcher)
+*/
+// acorda a tarefa indicada,
+// trasferindo-a da fila "queue" para a fila de prontas
+void task_awake (task_t *task, task_t **queue)
+{
+    if(queue != NULL)
+    {
+        queue_remove(queue, (queue_t*)task);
+    }
+
+    task->status = READY;
+
+    queue_append(&task_queue, (queue_t*)task);
+}
+
+
+/*
+    A chamada task_wait (b) faz com que a tarefa atual (corrente) seja suspensa até a conclusão
+    da tarefa b. Mais tarde, quando a tarefa b encerrar (usando a chamada task_exit), a tarefa
+    suspensa deve retornar à fila de tarefas prontas. Lembre-se que várias tarefas podem ficar
+    aguardando que a tarefa b encerre, então todas elas têm de ser acordadas quando isso ocorrer.
+
+    Caso a tarefa b não exista ou já tenha encerrado, esta chamada deve retornar imediatamente, 
+    sem suspender a tarefa atual.
+
+    O valor de retorno da chamada task_wait deve ser o código de encerramento da tarefa b
+    (valor exit_code informado como parâmetro de task_exit), ou -1, caso a tarefa indicada não exista ou algum outro erro. 
+*/
+
+// a tarefa corrente aguarda o encerramento de outra task
+int task_wait (task_t *task)
+{
+    if(task == NULL)
+    {
+        return -1;
+    }
+
+    task_suspend(&task);
+
+    return task->id;
+}
+
+
 
 
