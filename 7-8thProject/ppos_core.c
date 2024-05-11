@@ -293,13 +293,15 @@ void dispatcher()
 
 // Inicializa o sistema operacional; deve ser chamada no inicio do main()
 void ppos_init ()
-{
-    main_task.id = ID_MAIN; 
-    main_task.prev = NULL;
-    main_task.next = NULL; 
-    main_task.num_activations = 0;
-    main_task.processing_time = 0;
-    main_task.execution_time = 0;
+{   
+
+    // main_task = malloc(sizeof(task_t));
+    // if (main_task == NULL) {
+    //     perror("Erro na alocação de memória para a tarefa");
+    //     exit(1);
+    // }
+    task_init(&main_task, NULL, NULL);
+    print_task_queue();
     
     current_task = &main_task;
     current_task->num_activations++;
@@ -309,11 +311,12 @@ void ppos_init ()
         perror("Erro na alocação de memória para a tarefa");
         exit(1);
     }
-
     task_init(disp, dispatcher, NULL);
 
     set_handler();
     set_timer();
+
+    print_task_queue();
 
     setvbuf (stdout, 0, _IONBF, 0);
 }
@@ -342,8 +345,7 @@ int task_init (task_t *task, void  (*start_func)(void *), void   *arg)
         exit (1) ;
     }
     
-    id++;
-    task->id = id;
+    task->id = id++;
     task->status = READY;
     userTasks++;
     task_setprio(task, 0);
@@ -479,6 +481,31 @@ int task_getprio (task_t *task)
     }
 }
 
+/*
+    Acorda uma tarefa que está suspensa em uma dada fila, através das seguintes ações:
+
+    se a fila queue não for nula, retira a tarefa apontada por task dessa fila;
+    ajusta o status dessa tarefa para “pronta”;
+    insere a tarefa na fila de tarefas prontas;
+    continua a tarefa atual (não retorna ao dispatcher)
+*/
+// acorda a tarefa indicada,
+// trasferindo-a da fila "queue" para a fila de prontas
+void task_awake (task_t *task, task_t **queue)
+{
+    // se a fila queue não for nula, retira a tarefa apontada por task dessa fila
+    if(queue != NULL)
+    {
+        queue_remove((queue_t**)queue, (queue_t*)task);
+    }
+
+    // ajusta o status dessa tarefa para “pronta”
+    task->status = READY;
+
+    // insere a tarefa na fila de tarefas prontas
+    queue_append(&task_queue, (queue_t*)task);
+}
+
 
 /*
     Suspende a tarefa atual através das seguintes ações:
@@ -492,13 +519,16 @@ int task_getprio (task_t *task)
 // transferindo-a da fila de prontas para a fila "queue"
 void task_suspend (task_t **queue)
 {
+    // insere a tarefa atual na fila apontada por queue (se essa fila não for nula)
     if(queue != NULL)
     {
-        queue_append(queue, (queue_t*) current_task);
+        queue_append((queue_t**) queue, (queue_t*) current_task);
     }
 
+    // ajusta o status da tarefa atual para “suspensa”
     current_task->status = SUSPEND;
 
+    //  retira a tarefa atual da fila de tarefas prontas (se estiver nela)
     if(current_task->id > 1)
     {
         queue_remove(&task_queue, (queue_t*)current_task);
@@ -506,29 +536,6 @@ void task_suspend (task_t **queue)
 
     task_switch(disp);
 }
-
-/*
-    Acorda uma tarefa que está suspensa em uma dada fila, através das seguintes ações:
-
-    se a fila queue não for nula, retira a tarefa apontada por task dessa fila;
-    ajusta o status dessa tarefa para “pronta”;
-    insere a tarefa na fila de tarefas prontas;
-    continua a tarefa atual (não retorna ao dispatcher)
-*/
-// acorda a tarefa indicada,
-// trasferindo-a da fila "queue" para a fila de prontas
-void task_awake (task_t *task, task_t **queue)
-{
-    if(queue != NULL)
-    {
-        queue_remove(queue, (queue_t*)task);
-    }
-
-    task->status = READY;
-
-    queue_append(&task_queue, (queue_t*)task);
-}
-
 
 /*
     A chamada task_wait (b) faz com que a tarefa atual (corrente) seja suspensa até a conclusão
@@ -547,11 +554,9 @@ void task_awake (task_t *task, task_t **queue)
 int task_wait (task_t *task)
 {
     if(task == NULL)
-    {
         return -1;
-    }
 
-    task_suspend(&task);
+    task_suspend(&current_task);
 
     return task->id;
 }
