@@ -44,21 +44,21 @@ unsigned int systime()
     return program_timer;
 }
 
-void print_task_queue() 
+void print_task_queue(queue_t *task_q) 
 {
-    if (task_queue == NULL) {
+    if (task_q == NULL) {
         printf("[ ]\n");
         return;
     }
 
-    queue_t *current = task_queue;
+    queue_t *current = task_q;
     printf("[ ");
 
     do {
         task_t *task = (task_t *)current;
         printf("<%d> ", task->id);
         current = current->next;
-    } while (current != task_queue);
+    } while (current != task_q);
 
     printf("]\n");
 }
@@ -124,7 +124,7 @@ void set_dynamic_priorities()
     // Set all dynamic priorities
 
     #ifdef DEBUG
-        print_task_queue();
+        print_task_queue(task_queue);
         printf("\n");
     #endif
 
@@ -241,14 +241,14 @@ void dispatcher()
     
     // Remove dispatcher of the READY queue tasks
     #ifdef DEBUG
-        print_task_queue();
+        print_task_queue(task_queue);
     #endif
     
     queue_remove(&task_queue, (queue_t*)disp);
     
     #ifdef DEBUG
         printf ("--DEGUG: dispatcher(): removing dispatcher of the queue\n") ;
-        print_task_queue();
+        print_task_queue(task_queue);
         printf("\n");
     #endif
 
@@ -272,6 +272,10 @@ void dispatcher()
         }
 
         old_task = prox;
+
+        // proc_timer.end_time = systime();
+        // old_task->processing_time += proc_timer.end_time - proc_timer.start_time;
+
         switch (old_task->status)
         {
             case TERMINATED:               
@@ -293,15 +297,11 @@ void dispatcher()
 
 // Inicializa o sistema operacional; deve ser chamada no inicio do main()
 void ppos_init ()
-{   
+{       
+    setvbuf (stdout, 0, _IONBF, 0);
 
-    // main_task = malloc(sizeof(task_t));
-    // if (main_task == NULL) {
-    //     perror("Erro na alocação de memória para a tarefa");
-    //     exit(1);
-    // }
     task_init(&main_task, NULL, NULL);
-    print_task_queue();
+    // print_task_queue(task_queue);
     
     current_task = &main_task;
     current_task->num_activations++;
@@ -316,9 +316,7 @@ void ppos_init ()
     set_handler();
     set_timer();
 
-    print_task_queue();
-
-    setvbuf (stdout, 0, _IONBF, 0);
+    // print_task_queue(task_queue);
 }
 
 // gerência de tarefas =========================================================
@@ -361,7 +359,7 @@ int task_init (task_t *task, void  (*start_func)(void *), void   *arg)
 
     #ifdef DEBUG
         printf ("--DEGUG: task_init: task %d initialized\n", task->id) ;
-        print_task_queue();
+        print_task_queue(task_queue);
     #endif
 
     return 0;
@@ -380,7 +378,7 @@ int task_switch(task_t *task)
 
         #ifdef DEBUG
             printf ("--DEGUG: Task: %d removed of the queue of ready tasks, status: RUNNING\n", task->id);
-            print_task_queue();
+            print_task_queue(task_queue);
             printf("\n");
         #endif
     }
@@ -422,6 +420,19 @@ void task_exit (int exit_code)
     }
     else
     {   
+        int q_size = queue_size((queue_t*)(current_task->wait_queue));
+        // printf("wait queue size of task %d: %d\n", current_task->id, q_size);
+
+        // printf("Wait queue of task %d: ", current_task->id);
+        task_t *queue_aux = current_task->wait_queue;
+        for(int i = 0; i < q_size; i++)
+        {
+            // printf("<%d>", queue_aux->id);
+            task_awake(queue_aux, &current_task->wait_queue);
+            queue_aux = queue_aux->next;
+        }
+        printf("\n");
+
         #ifdef DEBUG
             printf ("--DEGUG: task %d exit\n", current_task->id);
         #endif
@@ -439,7 +450,7 @@ void task_yield ()
     queue_append(&task_queue, (queue_t*) current_task);
     #ifdef DEBUG
         printf ("--DEGUG: task_yield(): adding task %d in the queue\n", current_task->id) ;
-        print_task_queue();
+        print_task_queue(task_queue);
         printf("\n");
     #endif
     
@@ -507,31 +518,24 @@ void task_awake (task_t *task, task_t **queue)
 }
 
 
-/*
-    Suspende a tarefa atual através das seguintes ações:
-
-    retira a tarefa atual da fila de tarefas prontas (se estiver nela);
-    ajusta o status da tarefa atual para “suspensa”;
-    insere a tarefa atual na fila apontada por queue (se essa fila não for nula);
-    retorna ao dispatcher.
-*/
 // suspende a tarefa atual,
 // transferindo-a da fila de prontas para a fila "queue"
 void task_suspend (task_t **queue)
-{
-    // insere a tarefa atual na fila apontada por queue (se essa fila não for nula)
-    if(queue != NULL)
-    {
-        queue_append((queue_t**) queue, (queue_t*) current_task);
-    }
+{  
+    // print_task_queue(task_queue); 
+
+    // retira a tarefa atual da fila de tarefas prontas (se estiver nela);
+    queue_remove(&task_queue, (queue_t*)current_task);
 
     // ajusta o status da tarefa atual para “suspensa”
     current_task->status = SUSPEND;
 
-    //  retira a tarefa atual da fila de tarefas prontas (se estiver nela)
-    if(current_task->id > 1)
+    // print_task_queue(task_queue);
+
+    // insere a tarefa atual na fila apontada por queue (se essa fila não for nula)
+    if(queue != NULL)
     {
-        queue_remove(&task_queue, (queue_t*)current_task);
+        queue_append((queue_t**) queue, (queue_t*) current_task);
     }
 
     task_switch(disp);
@@ -556,11 +560,18 @@ int task_wait (task_t *task)
     if(task == NULL)
         return -1;
 
-    task_suspend(&current_task);
+    task_suspend(&task->wait_queue);
 
     return task->id;
 }
 
-
-
-
+// printf("Wait queue of task %d: ", current_task->id);
+    // printf("[");
+    // int q_size = queue_size((queue_t*)*queue);
+    // task_t *queue_aux = *queue;
+    // for(int i = 0; i < q_size; i++)
+    // {
+    //     printf("<%d>", ((task_t*)queue)->id);
+    //     queue_aux = queue_aux->next;
+    // }
+    // printf("]\n");

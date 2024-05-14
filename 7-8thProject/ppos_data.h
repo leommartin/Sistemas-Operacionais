@@ -7,6 +7,7 @@
 #ifndef __PPOS_DATA__
 #define __PPOS_DATA__
 
+#include "queue.h"
 #include <ucontext.h>		// biblioteca POSIX de trocas de contexto
 #include <signal.h>     // biblioteca para tratar sinais
 #include <sys/time.h>   // biblioteca para gerar os clock ticks
@@ -25,6 +26,7 @@ typedef struct task_t
   int execution_time;
   int processing_time;
   int num_activations;
+  struct task_t *wait_queue;
   // ... (outros campos serão adicionados mais tarde)
 } task_t ;
 
