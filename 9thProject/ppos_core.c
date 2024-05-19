@@ -11,10 +11,10 @@
 #define RUNNING 3
 #define SUSPEND 4
 #define TERMINATED 5
-#define QUANTUM 500
+#define QUANTUM 10
 
 int id = 0;
-int userTasks = -1; // -1 because main_task and dispatcher are not user tasks
+int userTasks = -2; // -1 because main_task and dispatcher are not user tasks
 int program_timer = 0;
 
 // structure that defines an action handler (must be global or static)
@@ -59,12 +59,6 @@ void print_task_queue(queue_t *tasks_queue)
 
 }
 
-// Verify if the task is a user task
-// if it is, decrement of quantum
-// if it is not, nothing to do
-/* if the quantum timer goes to ZERO, the task that is executing go back to end of the ready queue tasks
-   and the control of CPU returns to dispatcher */
-// if the quantum timer is not ZERO, the task continues executing
 void handler(int signum)
 {
     if (current_task->type == USER_TASK)
@@ -148,17 +142,6 @@ void set_dynamic_priorities()
 
 int verify_tasks_to_awake()
 {
-    // task_t *task_aux = sleeping_tasks_queue;
-
-    // while (task_aux->next != sleeping_tasks_queue)
-    // {
-    //     if (task_aux->wake_up_time <= systime())
-    //     {
-    //         task_awake(task_aux, &sleeping_tasks_queue);
-    //     }
-
-    //     task_aux = task_aux->next;
-    // }
     int q_size = queue_size((queue_t*)sleeping_tasks_queue);
 
     task_t *task_aux = sleeping_tasks_queue;
@@ -179,6 +162,9 @@ int verify_tasks_to_awake()
 
 task_t *scheduler()
 {
+    #ifdef DEBUG
+        printf ("--DEGUG: scheduler()\n");
+    #endif
     queue_t *queue_aux;
     task_t *task_aux, *next_task;
     int highest_prio = 21;
@@ -189,9 +175,9 @@ task_t *scheduler()
         exit(0);
     }
 
-    #ifdef DEBUG
-        printf("--DEGUG: Traversing the queue to find the highest dynamic priority\n");
-    #endif
+    // #ifdef DEBUG
+    //     printf("--DEGUG: Traversing the queue to find the highest dynamic priority\n");
+    // #endif
 
     int q_size = queue_size(ready_tasks_queue);
 
@@ -250,9 +236,9 @@ task_t *scheduler()
         i++;
     }
 
-    #ifdef DEBUG
-        printf("\n--DEGUG: changing context to the task: %d with highest dyn prio, dyn_prio:%d \n", next_task->id, next_task->dynamic_prio);
-    #endif
+    // #ifdef DEBUG
+    //     printf("\n--DEGUG: changing context to the task: %d with highest dyn prio, dyn_prio:%d \n", next_task->id, next_task->dynamic_prio);
+    // #endif
 
     next_task->dynamic_prio = next_task->static_prio;
 
@@ -263,10 +249,43 @@ task_t *scheduler()
     return next_task;
 };
 
+void change_context()
+{
+    prox = scheduler();
+    if (prox != NULL)
+    {
+        prox->quantum_timer = QUANTUM;
+        // Add processing time to dispacther before switching to the next task
+        proc_timer.end_time = systime();
+        current_task->processing_time += proc_timer.end_time - proc_timer.start_time;
+        task_switch(prox);
+    }
+}
+
+void check_status()
+{
+    old_task = prox;
+    switch (old_task->status)
+    {
+        case TERMINATED:
+            queue_remove(&ready_tasks_queue, (queue_t*) old_task);
+            #ifdef DEBUG
+                printf ("--DEGUG: dispatcher killing task %d\n", old_task->id);
+                print_task_queue(ready_tasks_queue);
+            #endif
+            free(old_task->context.uc_stack.ss_sp);
+            old_task->context.uc_stack.ss_size = 0;
+            userTasks--;
+            old_task = NULL;
+            break;
+
+        default:
+            break;
+    }
+}
+
 void dispatcher()
 {
-    // prox = disp->next;
-
     // Remove dispatcher of the READY queue tasks
     #ifdef DEBUG
         print_task_queue(ready_tasks_queue);
@@ -289,47 +308,25 @@ void dispatcher()
         // Scheduler choose the next task to execute
         current_task = disp;
 
-        if(verify_tasks_to_awake() < 5)
+        if(verify_tasks_to_awake() < userTasks)
         {
-
-            prox = scheduler();
-            if (prox != NULL)
-            {
-                prox->quantum_timer = QUANTUM;
-                // Add processing time to dispacther before switching to the next task
-                proc_timer.end_time = systime();
-                current_task->processing_time += proc_timer.end_time - proc_timer.start_time;
-                task_switch(prox);
-            }
-
-            old_task = prox;
-            switch (old_task->status)
-            {
-                case TERMINATED:
-                    // queue_remove(&ready_tasks_queue, (queue_t*) old_task);
-                    free(old_task->context.uc_stack.ss_sp);
-                    old_task->context.uc_stack.ss_size = 0;
-                    userTasks--;
-                    break;
-
-                default:
-                    break;
-            }
-
-            // printf("\n\nPRINTING THE QUEUE OF SLEEPING TASKS\n");
-            // print_task_queue((queue_t*) sleeping_tasks_queue);
-            // printf("\n");
+            change_context();
+            check_status();
         }
 
-        // Periodicamente, o dispatcher deve percorrer a fila de tarefas adormecidas
-        // e reativar as tarefas que já podem acordar, usando task_awake.
     }
-
+    
+    // Return to main after all tasks are terminated
+    change_context();
+    check_status();
+    
+    // End of the program
     prox = disp;
     task_exit(0);
+
 }
 
-// Inicializa o sistema operacional; deve ser chamada no inicio do main()
+// Init our Operational System
 void ppos_init()
 {
     setvbuf (stdout, 0, _IONBF, 0);
@@ -353,10 +350,7 @@ void ppos_init()
     set_timer();
 }
 
-// gerência de tarefas =========================================================
-
-// Inicializa uma nova tarefa. Retorna um ID> 0 ou erro.
-// (descritor da nova tarefa, funcao corpo da tarefa, argumentos para a tarefa)
+// Tasks manegement =========================================================
 int task_init(task_t *task, void (*start_func)(void *), void *arg)
 {
     char *stack;
@@ -450,28 +444,27 @@ void task_exit (int exit_code)
         #ifdef DEBUG
             printf ("--DEGUG: dispatcher exit\n");
         #endif
+        free(disp->context.uc_stack.ss_sp);
+        disp->context.uc_stack.ss_size = 0;
         exit(0);
     }
     else
-    {   
-        int q_size = queue_size((queue_t*)(current_task->wait_queue));
-        // printf("wait queue size of task %d: %d\n", current_task->id, q_size);
+    {   // Awake tasks that are waiting for the current task
 
-        // printf("Wait queue of task %d: ", current_task->id);
-        task_t *queue_aux = current_task->wait_queue;
+        int q_size = queue_size((queue_t*)current_task->wait_queue);
+        task_t *task_aux = current_task->wait_queue;
         for(int i = 0; i < q_size; i++)
         {
-            // printf("<%d>", queue_aux->id);
-            task_awake(queue_aux, &current_task->wait_queue);
-            queue_aux = queue_aux->next;
+            task_t *next = task_aux->next;
+            if (task_aux->wake_up_time <= systime())
+            {
+                task_awake(task_aux, &current_task->wait_queue);
+            }
+
+            task_aux = next;
         }
-        // printf("\n");
-
-        #ifdef DEBUG
-            printf ("--DEGUG: task %d exit\n", current_task->id);
-        #endif
         current_task->status = TERMINATED;
-
+    
         task_switch(disp);
     }
 }
@@ -525,30 +518,43 @@ int task_getprio(task_t *task)
     }
 }
 
-/*
-    Acorda uma tarefa que está suspensa em uma dada fila, através das seguintes ações:
-
-    se a fila queue não for nula, retira a tarefa apontada por task dessa fila;
-    ajusta o status dessa tarefa para “pronta”;
-    insere a tarefa na fila de tarefas prontas;
-    continua a tarefa atual (não retorna ao dispatcher)
-*/
-
 // acorda a tarefa indicada,
 // trasferindo-a da fila "queue" para a fila de prontas
 void task_awake(task_t *task, task_t **queue)
 {
+    #ifdef DEBUG
+        printf("\n--DEGUG: task_awake(): Task %d trying to remove T%d of the SLEEPING tasks queue\n", current_task->id, task->id);
+        print_task_queue((queue_t*) *queue);
+    #endif
+
     // se a fila queue não for nula, retira a tarefa apontada por task dessa fila
     if (queue != NULL)
     {
         queue_remove((queue_t **)queue, (queue_t *)task);
     }
 
+    #ifdef DEBUG
+        printf("--debug: SLEEPING tasks queue: ");
+        print_task_queue((queue_t*) *queue);
+        printf("\n");
+    #endif
+
     // ajusta o status dessa tarefa para “pronta”
     task->status = READY;
 
+    #ifdef DEBUG
+        printf("--DEGUG: task_awake(): trying to add task %d to the READY tasks queue\n", task->id);
+        printf("--debug: READY tasks queue: ");
+        print_task_queue(ready_tasks_queue);
+    #endif
     // insere a tarefa na fila de tarefas prontas
     queue_append(&ready_tasks_queue, (queue_t *)task);
+
+    #ifdef DEBUG
+        printf("--debug: READY tasks queue: ");
+        print_task_queue(ready_tasks_queue);
+        printf("\n");
+    #endif
 }
 
 // busca por uma tarefa na fila "queue"
@@ -583,9 +589,7 @@ void task_suspend (task_t **queue)
 {  
     // print_task_queue(ready_tasks_queue); 
     #ifdef DEBUG
-        printf("--DEGUG: task_suspend(): removing task %d of the READY tasks queue\n", current_task->id);
-        // print_task_queue(ready_tasks_queue);
-        // printf("\n");
+        printf("--DEGUG: task_suspend(): trying to remove task %d of the READY tasks queue\n", current_task->id);
     #endif
 
     // retira a tarefa atual da fila de tarefas prontas (se estiver nela);
@@ -593,10 +597,16 @@ void task_suspend (task_t **queue)
         queue_remove(&ready_tasks_queue, (queue_t*)current_task);
 
     #ifdef DEBUG
-        printf("--DEGUG: task_suspend(): after task %d being removed of the READY tasks queue\n", current_task->id);
+        printf("--debug: READY tasks queue: ");
         print_task_queue(ready_tasks_queue);
         printf("\n");
     #endif
+
+    // #ifdef DEBUG
+    //     printf("--DEGUG: task_suspend(): after task %d being removed of the READY tasks queue\n", current_task->id);
+    //     print_task_queue(ready_tasks_queue);
+    //     printf("\n");
+    // #endif
 
     // ajusta o status da tarefa atual para “suspensa”
     current_task->status = SUSPEND;
@@ -604,7 +614,7 @@ void task_suspend (task_t **queue)
     // print_task_queue(ready_tasks_queue);
 
     #ifdef DEBUG
-        printf("--DEGUG: task_suspend(): adding task %d  to the SLEEPING tasks queue\n", current_task->id);
+        printf("\n--DEGUG: task_suspend(): adding task %d  to the SLEEPING tasks queue\n", current_task->id);
     #endif
 
     // insere a tarefa atual na fila apontada por queue (se essa fila não for nula)
@@ -613,28 +623,21 @@ void task_suspend (task_t **queue)
         queue_append((queue_t**) queue, (queue_t*) current_task);
     }
 
+    #ifdef DEBUG
+        printf("--debug: SLEEPING tasks queue: ");
+        print_task_queue((queue_t*) *queue);
+        printf("\n");
+    #endif
+
     task_switch(disp);
 }
-
-/*
-    A chamada task_wait (b) faz com que a tarefa atual (corrente) seja suspensa até a conclusão
-    da tarefa b. Mais tarde, quando a tarefa b encerrar (usando a chamada task_exit), a tarefa
-    suspensa deve retornar à fila de tarefas prontas. Lembre-se que várias tarefas podem ficar
-    aguardando que a tarefa b encerre, então todas elas têm de ser acordadas quando isso ocorrer.
-
-    Caso a tarefa b não exista ou já tenha encerrado, esta chamada deve retornar imediatamente,
-    sem suspender a tarefa atual.
-
-    O valor de retorno da chamada task_wait deve ser o código de encerramento da tarefa b
-    (valor exit_code informado como parâmetro de task_exit), ou -1, caso a tarefa indicada não exista ou algum outro erro.
-*/
 
 // a tarefa corrente aguarda o encerramento de outra task
 int task_wait (task_t *task)
 {
-    if(task == NULL)
+    if(task == NULL || task->status == TERMINATED)
         return -1;
-
+        
     task_suspend(&task->wait_queue);
 
     return task->id;
