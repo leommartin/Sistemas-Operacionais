@@ -1,0 +1,986 @@
+main: inicio
+--DEGUG: task_init: task 0 initialized
+[ <0> ]
+--DEGUG: task_init: task 1 initialized
+[ <0> <1> ]
+
+------------- SEMAPHORE ------------- 
+--DEGUG: sem_init: semaphore initialized with success
+
+
+------------- SEMAPHORE ------------- 
+--DEGUG: sem_init: semaphore initialized with success
+
+--DEGUG: task_init: task 2 initialized
+[ <0> <1> <2> ]
+--DEGUG: task_init: task 3 initialized
+[ <0> <1> <2> <3> ]
+--DEGUG: task_init: task 4 initialized
+[ <0> <1> <2> <3> <4> ]
+--DEGUG: task_init: task 5 initialized
+[ <0> <1> <2> <3> <4> <5> ]
+--DEGUG: task_suspend(): trying to remove task 0 of the READY tasks queue
+--debug: READY tasks queue: [ <0> <1> <2> <3> <4> <5> ]
+--debug: READY tasks queue: [ <1> <2> <3> <4> <5> ]
+
+
+--DEGUG: task_suspend(): adding task 0  to the SLEEPING tasks queue
+--debug: SLEEPING tasks queue of task 2: [ <0> ]
+[ ]
+
+--DEGUG: task that wins the CPU: 1
+[ <1> <2> <3> <4> <5> ]
+[ <1> <2> <3> <4> <5> ]
+--DEGUG: dispatcher(): removing dispatcher of the queue
+[ <2> <3> <4> <5> ]
+
+[ <2> <3> <4> <5> ]
+
+--DEGUG: setting dyn prio to task : 2, dyn_prio:0 
+--DEGUG: setting dyn prio to task : 3, dyn_prio:0 
+--DEGUG: setting dyn prio to task : 4, dyn_prio:0 
+--DEGUG: setting dyn prio to task : 5, dyn_prio:0 
+
+--DEGUG: scheduler()
+--DEGUG: next task is : 2, with higher dyn_prio:0 
+
+--DEGUG: task that wins the CPU: 2
+[ <2> <3> <4> <5> ]
+Task 2 turn!
+Task 2 out!
+A1 zig (0)
+--DEGUG: task_suspend(): trying to remove task 2 of the READY tasks queue
+--debug: READY tasks queue: [ <2> <3> <4> <5> ]
+--debug: READY tasks queue: [ <3> <4> <5> ]
+
+
+--DEGUG: task_suspend(): adding task 2  to the SLEEPING tasks queue
+--debug: SLEEPING tasks queue: [ <2> ]
+[ <2> ]
+
+--DEGUG: task that wins the CPU: 1
+[ <3> <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 3, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 3
+[ <3> <4> <5> ]
+Task 3 turn!
+--DEGUG: task_suspend(): trying to remove task 3 of the READY tasks queue
+--debug: READY tasks queue: [ <3> <4> <5> ]
+--debug: READY tasks queue: [ <4> <5> ]
+
+
+--DEGUG: task_suspend(): adding task 3  to the SLEEPING tasks queue
+--debug: SLEEPING tasks queue of task 2: [ <3> ]
+[ <2> ]
+
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-2 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-3 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 4 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 5, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 5
+[ <4> <5> ]
+--DEGUG: task_yield(): adding task 5 in the queue
+[ <4> <5> ]
+
+--DEGUG: backing to dispatcher... 
+--DEGUG: task that wins the CPU: 1
+[ <4> <5> ]
+--DEGUG: scheduler()
+--DEGUG: next task is : 4, with higher dyn_prio:-1 
+
+--DEGUG: task that wins the CPU: 4
+[ <4> <5> ]
