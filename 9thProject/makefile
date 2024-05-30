@@ -11,6 +11,9 @@ OBJS = $(SRCS:.c=.o)
 # Nome do executável de teste
 EXEC = test_sleep
 
+# Nome do arquivo compactado
+ZIPFILE = 9thProject.zip
+
 # Regras de compilação
 all: $(EXEC)
 

@@ -85,11 +85,11 @@ void queue_print (char *name, queue_t *queue, void print_elem (void*))
 
 int queue_append (queue_t **queue, queue_t *elem) 
 {
-    // if((elem->prev != NULL) || (elem->next != NULL))
-    // {
-    //     fprintf(stderr,"----ERROR: The element is invalid for queue_append(): the element already belongs to a queue.\n");
-    //     return -1; // Error: this element belongs to other queue and needs to be removed to be appended in this queue.
-    // }
+    if((elem->prev != NULL) || (elem->next != NULL))
+    {
+        fprintf(stderr,"----ERROR: The element is invalid for queue_append(): the element already belongs to a queue.\n");
+        return -1; // Error: this element belongs to other queue and needs to be removed to be appended in this queue.
+    }
     
     // The queue is empty and we should to insert 1 element
     if(*queue == NULL)
@@ -203,16 +203,3 @@ int queue_remove (queue_t **queue, queue_t *elem)
     fprintf(stderr,"----ERROR: The element don't belongs to this queue.\n");
     return -1;
 }
-
-// void print_elem (void *ptr)
-// {
-//    filaint_t *elem = ptr ;
-
-//    if (!elem)
-//       return ;
-
-//    elem->prev ? printf ("%d", elem->prev->id) : printf ("*") ;
-//    printf ("<%d>", elem->id) ;
-//    elem->next ? printf ("%d", elem->next->id) : printf ("*") ;
-// }
-
