@@ -7,7 +7,6 @@
 #ifndef __PPOS_DATA__
 #define __PPOS_DATA__
 
-#include "queue.h"
 #include <ucontext.h>		// biblioteca POSIX de trocas de contexto
 #include <signal.h>     // biblioteca para tratar sinais
 #include <sys/time.h>   // biblioteca para gerar os clock ticks

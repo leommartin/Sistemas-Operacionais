@@ -431,7 +431,7 @@ void task_exit (int exit_code)
             task_awake(queue_aux, &current_task->wait_queue);
             queue_aux = queue_aux->next;
         }
-        printf("\n");
+        // printf("\n");
 
         #ifdef DEBUG
             printf ("--DEGUG: task %d exit\n", current_task->id);
