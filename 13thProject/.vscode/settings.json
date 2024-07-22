@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "ppos_disk.h": "c",
+        "ppos_data.h": "c",
+        "ppos.h": "c",
+        "signal.h": "c",
+        "disk.h": "c",
+        "queue.h": "c",
+        "string.h": "c"
+    }
+}
