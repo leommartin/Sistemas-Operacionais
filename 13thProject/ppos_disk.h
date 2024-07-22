@@ -10,6 +10,7 @@
 #define NO_OPERATION 0
 #define WRITE_OPERATION 1
 #define READ_OPERATION 2
+#define OPERATION_DONE 1
 
 // estruturas de dados e rotinas de inicializacao e acesso
 // a um dispositivo de entrada/saida orientado a blocos,
@@ -20,6 +21,10 @@ typedef struct
 {
   int num_blocks;
   int block_size;
+  int current_block;
+  int signal;
+  void* buffer; 
+
   // semaphore de acesso ao disco
   // status (livre, ocupado, leiutra, escrita)
   // sinal 

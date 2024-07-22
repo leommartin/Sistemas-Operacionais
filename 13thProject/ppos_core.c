@@ -106,27 +106,6 @@ void set_handler()
     }
 }
 
-void disk_signal_handler(int signum) 
-{
-    // Acorda o gerenciador de disco
-    if(disk_manager.status == SUSPEND)
-        task_awake(&disk_manager, &sleeping_tasks_queue);
-
-    // To do: usa sleeping tasks queue mesmo?
-}
-
-void set_disk_signal_handler() 
-{
-    action.sa_handler = disk_signal_handler;
-    sigemptyset(&action.sa_mask);
-    action.sa_flags = 0;
-
-    if (sigaction(SIGUSR1, &action, NULL) < 0) {
-        perror("Erro em sigaction: ");
-        exit(1);
-    }
-}
-
 void set_timer()
 {
     // ajusta valores do temporizador
@@ -161,9 +140,9 @@ void set_dynamic_priorities()
         task_aux = (task_t *)queue_aux;
         task_aux->dynamic_prio = task_aux->static_prio;
 
-    #ifdef DEBUG
-        printf("\t--DEBUG: setting dyn prio to task : %d, dyn_prio:%d \n", task_aux->id, task_aux->dynamic_prio);
-    #endif
+    // #ifdef DEBUG
+    //     printf("\t--DEBUG: setting dyn prio to task : %d, dyn_prio:%d \n", task_aux->id, task_aux->dynamic_prio);
+    // #endif
 
         queue_aux = queue_aux->next;
     }
@@ -171,13 +150,16 @@ void set_dynamic_priorities()
     task_aux = (task_t *)queue_aux;
     task_aux->dynamic_prio = task_aux->static_prio;
 
-    #ifdef DEBUG
-        printf("\t--DEBUG: setting dyn prio to task : %d, dyn_prio:%d \n\n", task_aux->id, task_aux->dynamic_prio);
-    #endif
+    // #ifdef DEBUG
+    //     printf("\t--DEBUG: setting dyn prio to task : %d, dyn_prio:%d \n\n", task_aux->id, task_aux->dynamic_prio);
+    // #endif
 }
 
 int verify_tasks_to_awake()
 {
+    #ifdef DEBUG
+            printf("-> Verificando tarefas para acordar...\n");
+    #endif
     int q_size = queue_size((queue_t*)sleeping_tasks_queue);
 
     task_t *task_aux = sleeping_tasks_queue;
@@ -188,6 +170,9 @@ int verify_tasks_to_awake()
         if (task_aux->wake_up_time <= systime())
         {
             task_awake(task_aux, &sleeping_tasks_queue);
+            #ifdef DEBUG
+                printf("-> Tarefa %d acordou!\n", task_aux->id);
+            #endif
         }
 
         task_aux = next;
@@ -359,41 +344,126 @@ void dispatcher()
     task_exit(0);
 }
 
+void disk_signal_handler(int signum) 
+{
+    // Acorda o gerenciador de disco
+
+    disk.signal = OPERATION_DONE;
+    task_awake(&disk_manager, &sleeping_tasks_queue);
+    #ifdef DEBUG
+        // printf("\t--DEBUG: disk_signal_handler(): disk.signal = %d\n", disk.signal);
+        printf("disk_signal_handler(): disk.signal = %d\n", disk.signal);
+    #endif
+
+    // disk.signal = 0;
+}
+
+void set_disk_signal_handler()
+{
+    action.sa_handler = disk_signal_handler;
+    sigemptyset(&action.sa_mask);
+    action.sa_flags = 0;
+
+    if (sigaction(SIGUSR1, &action, NULL) < 0) {
+        perror("Erro em sigaction: ");
+        exit(1);
+    }
+}
+
 void diskDriverBody (void * args)
 {
-//    while (1) 
-//    {
-//         // obtém o semáforo de acesso ao disco  
-//         sem_down(&sem_disk);
- 
-//         // se foi acordado devido a um sinal do disco
-//         // if (disco gerou um sinal)
-//         // {
-//         //     acorda a tarefa cujo pedido foi atendido (queue_remove) ???
-//         // }
 
-//         // se o disco estiver livre e houver pedidos de E/S na fila
-//         // if (disco_livre && (fila_disco != NULL))
-//         // {
-//         //     escolhe na fila o pedido a ser atendido, usando FCFS
-//         //     solicita ao disco a operação de E/S, usando disk_cmd()
-//         // }
+    while (1) 
+    {
+        // obtém o semáforo de acesso ao disco 
+        current_task = &disk_manager; 
 
-//         if(disk_cmd (DISK_CMD_STATUS, 0, 0) && disk_tasks_queue != NULL)
-//         {
-//             task_t *task_aux = disk_tasks_queue;
-//             queue_remove((queue_t**)&disk_tasks_queue, (queue_t*)task_aux);
-//             task_awake(task_aux, &disk_tasks_queue);
-//         }
- 
-//         // libera o semáforo de acesso ao disco
-//         sem_down(&sem_disk);
+        #ifdef DEBUG
+            printf("diskDriverBody(): current_task = %d\n", current_task->id);
+        #endif
+
+        sem_down(&sem_disk);
+
+        #ifdef DEBUG
+            printf("-> Conseguiu acesso ao semaforo/disco\n");
+        #endif
+
+        // se foi acordado devido a um sinal do disco
+        if(disk.signal == OPERATION_DONE) // se recebeu sinal de SIGUSR1 essa flag é ativada
+        {
+            // acorda a tarefa cujo pedido foi atendido
+            #ifdef DEBUG
+                printf("--DISK: Recebeu sinal de SIGUSR1.");
+            #endif
+            task_t *task_aux = disk_tasks_queue;
+            task_awake(task_aux, &disk_tasks_queue);
+            
+            #ifdef DEBUG
+                printf("--DISK: Acordou tarefa %d, cujo pedido foi atendido.\n", task_aux->id);
+            #endif
+            disk.signal = 0; // reseta a flag para 0
+        }
         
-//         // suspende a tarefa corrente (retorna ao dispatcher)
-//         task_suspend((task_t**)ready_tasks_queue);
-//         // To do: verificar em que fila a tarefa deve ser colocada.
+        if(disk_cmd (DISK_CMD_STATUS, 0, 0) == 1 && disk_tasks_queue != NULL)
+        {
+            // #ifdef DEBUG
+            //     printf("-> Tarefas na fila do disco: ");
+            //     print_task_queue((queue_t*)disk_tasks_queue);
+            //     printf("\n");
+            // #endif
 
-//    }
+            task_t *task_aux = disk_tasks_queue;
+            // queue_remove((queue_t**)&disk_tasks_queue, (queue_t*)task_aux);
+
+            // #ifdef DEBUG
+            //     printf("--DISK: Removeu tarefa %d da fila do disco para realizar operação de leitura/escrita.\n", task_aux->id);
+            // #endif
+
+            if(task_aux->rw_request.type == READ_OPERATION)
+            {
+                if(disk_cmd(DISK_CMD_READ, task_aux->rw_request.block, task_aux->rw_request.buffer) < 0)
+                {
+                    perror("Error while reading block from disk\n");
+                    exit(1);
+                }
+                #ifdef DEBUG
+                    printf("--DISK: Operação de LEITURA realizada.\n");
+                #endif
+                // disk.signal = OPERATION_DONE;
+            }
+            else if(task_aux->rw_request.type == WRITE_OPERATION)
+            {
+                if(disk_cmd(DISK_CMD_WRITE, task_aux->rw_request.block, task_aux->rw_request.buffer) < 0)
+                {
+                    perror("Error while writing block to disk\n");
+                    exit(1);
+                }
+                #ifdef DEBUG
+                    printf("--DISK: Operação de ESCRITA realizada.\n");
+                #endif
+                // disk.signal = OPERATION_DONE;
+            }
+            else
+            {
+                #ifdef DEBUG
+                    printf("--DISK: Nenhuma operação realizada.\n");
+                    printf("--ERROR: Verificar setamento de operação de leitura/escrita.\n");
+                #endif
+            }
+            task_aux->rw_request.type = NO_OPERATION;
+        }       
+
+        // libera o semáforo de acesso ao disco
+        sem_up(&sem_disk);
+
+         #ifdef DEBUG
+            printf("-> Liberou acesso ao semaforo/disco\n\n");
+        #endif
+        
+        // suspende a tarefa corrente (retorna ao dispatcher)
+        task_suspend(&sleeping_tasks_queue);
+        // To do: verificar em que fila a tarefa deve ser colocada.
+    }
 }
 
 // Init our Operational System
@@ -419,9 +489,11 @@ void ppos_init()
     task_init(&disk_manager, diskDriverBody, NULL);
     // print_task_queue(ready_tasks_queue);
 
+    printf("\n\tInicializando semaforo de acesso ao disco...\n");
     sem_init(&sem_disk, 1);
 
     set_handler();
+    set_disk_signal_handler();
     set_timer();
 }
 
@@ -602,7 +674,7 @@ int task_init(task_t *task, void (*start_func)(void *), void *arg)
     task->processing_time = 0;
     task->num_activations = 0;
     task->wake_up_time = 0;
-    task->rw_operation = NO_OPERATION;
+    task->rw_request.type = NO_OPERATION;
 
     task->type = (task->id > 1) ? USER_TASK : SYSTEM_TASK;
 
@@ -847,18 +919,27 @@ void task_suspend (task_t **queue)
     }
 
     #ifdef DEBUG
-        if(queue != &sleeping_tasks_queue)
+        if(queue == &disk_tasks_queue)
         {
-            printf("\t--DEBUG: SEMAPHORE || WAIT tasks queue: ");
-            print_task_queue((queue_t*) *queue);  
-        }
-        else
-        {
-            printf("\t--DEBUG: SLEEPING tasks queue: ");
-            print_task_queue((queue_t*)sleeping_tasks_queue);
+            printf("\n-> Fila do disco:\n ");
+            print_task_queue((queue_t*)disk_tasks_queue);
             printf("\n");
         }
     #endif
+
+    // #ifdef DEBUG
+    //     if(queue != &sleeping_tasks_queue)
+    //     {
+    //         printf("\t--DEBUG: SEMAPHORE || WAIT tasks queue: ");
+    //         print_task_queue((queue_t*) *queue);  
+    //     }
+    //     else
+    //     {
+    //         printf("\t--DEBUG: SLEEPING tasks queue: ");
+    //         print_task_queue((queue_t*)sleeping_tasks_queue);
+    //         printf("\n");
+    //     }
+    // #endif
 
     task_switch(disp);
 }

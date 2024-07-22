@@ -88,6 +88,9 @@ int queue_append (queue_t **queue, queue_t *elem)
     if((elem->prev != NULL) || (elem->next != NULL))
     {
         fprintf(stderr,"----ERROR: The element is invalid for queue_append(): the element already belongs to a queue.\n");
+        #ifdef DEBUG
+            printf("----ERROR: The element is invalid for queue_append(): the element already belongs to a queue.\n");
+        #endif
         return -1; // Error: this element belongs to other queue and needs to be removed to be appended in this queue.
     }
     
@@ -129,6 +132,9 @@ int queue_remove (queue_t **queue, queue_t *elem)
     if(*queue == NULL)
     {
         fprintf(stderr,"----ERROR: *queue points to NULL.\n");
+        #ifdef DEBUG
+            printf("----ERROR: *queue points to NULL.\n");
+        #endif
         return -1;
     }
 

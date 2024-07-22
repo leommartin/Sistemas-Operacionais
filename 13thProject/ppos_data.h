@@ -30,6 +30,13 @@ typedef struct cpu_timer
   unsigned int end_time;
 } cpu_timer;
 
+typedef struct rw_operation
+{
+  int type;
+  int block;
+  void *buffer;
+} rw_operation;
+
 // Estrutura que define um Task Control Block (TCB)
 typedef struct task_t
 {
@@ -46,7 +53,7 @@ typedef struct task_t
   int num_activations;
   struct task_t *wait_queue;
   int wake_up_time;
-  int rw_operation;
+  rw_operation rw_request;
   // ... (outros campos serão adicionados mais tarde)
 } task_t ;
 

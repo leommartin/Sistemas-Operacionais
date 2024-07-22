@@ -25,6 +25,9 @@ $(EXEC2): pingpong-disco2.o $(OBJ)
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
+debug: CFLAGS += -DDEBUG
+debug: all
+
 # Limpar arquivos objetos e executáveis
 clean:
 	rm -f *.o $(EXEC1) $(EXEC2)
