@@ -4,6 +4,7 @@
 
 #include "queue.h"
 #include <stdio.h>
+#include "ppos.h"
 //------------------------------------------------------------------------------
 // estrutura de uma fila genérica, sem conteúdo definido.
 // Veja um exemplo de uso desta estrutura em testafila.c
@@ -11,6 +12,27 @@
 //------------------------------------------------------------------------------
 // Conta o numero de elementos na fila
 // Retorno: numero de elementos na fila
+
+void print_queue(queue_t *tasks_queue)
+{
+    // printf("\t");
+    if (tasks_queue == NULL)
+    {
+        printf("[ ]\n");
+        return;
+    }
+
+    queue_t *current = tasks_queue;
+    printf("[ ");
+
+     do {
+        task_t *task = (task_t *)current;
+        printf("<%d> ", task->id);
+        current = current->next;
+    } while (current != tasks_queue);
+    printf("]\n");
+
+}
 
 int queue_size (queue_t *queue) 
 {
@@ -87,7 +109,16 @@ int queue_append (queue_t **queue, queue_t *elem)
 {
     if((elem->prev != NULL) || (elem->next != NULL))
     {
-        fprintf(stderr,"----ERROR: The element is invalid for queue_append(): the element already belongs to a queue.\n");
+        task_t *task = (task_t *)elem;
+        printf("----ERROR: The element <%d> is invalid for queue_append(): the element already belongs to a queue.\n", task->id);
+        printf("Fila que está tentando inserir o elemento: ");
+        print_queue(*queue);
+        printf("Fila de prontas: ");
+        print_queue(ready_tasks_queue);
+        printf("Fila de dormindo: ");
+        print_queue((queue_t*)sleeping_tasks_queue);
+        printf("Fila de tarefas do disco: ");
+        print_queue((queue_t*)disk_tasks_queue);
         #ifdef DEBUG
             printf("----ERROR: The element is invalid for queue_append(): the element already belongs to a queue.\n");
         #endif
@@ -129,7 +160,7 @@ int queue_remove (queue_t **queue, queue_t *elem)
     queue_t *aux;
     int q_size;
 
-    if(*queue == NULL)
+    if(*queue == NULL || queue == NULL)
     {
         fprintf(stderr,"----ERROR: *queue points to NULL.\n");
         #ifdef DEBUG

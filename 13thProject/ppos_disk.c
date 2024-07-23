@@ -135,7 +135,7 @@ int disk_block_read  (int block, void* buffer)
     sem_up(&sem_disk);
 
     // suspende a tarefa corrente (retorna ao dispatcher)
-    disk.signal = 0;
+    // disk.signal = 0;
     
     #ifdef DEBUG
         printf("-> Liberou semaforo, resetou signal e suspendeu a tarefa colocando-a na fila do disco.\n");
@@ -164,7 +164,7 @@ int disk_block_write (int block, void* buffer)
 
     
     // inclui o pedido na fila_disco
-    current_task->rw_request.type = READ_OPERATION;
+    current_task->rw_request.type = WRITE_OPERATION;
     current_task->rw_request.block = block;  
     // current_task->rw_request.buffer = malloc(disk.block_size); 
     current_task->rw_request.buffer = buffer;
@@ -190,16 +190,16 @@ int disk_block_write (int block, void* buffer)
     sem_up(&sem_disk);
  
     // suspende a tarefa corrente (retorna ao dispatcher)
-    disk.signal = 0;
+    // disk.signal = 0;
 
-    #ifdef DEBUG
-        printf("-> Liberou semaforo, resetou signal e suspendeu a tarefa colocando-a na fila do disco.\n");
-    #endif
+    // #ifdef DEBUG
+        // printf("-> Liberou semaforo, resetou signal e suspendeu a tarefa colocando-a na fila do disco.\n");
+    // #endif
     task_suspend((task_t**)&disk_tasks_queue);
 
-    #ifdef DEBUG
-        printf("--DISK: Retornou sinal para tarefa com o TÉRMINO da OPERAÇÃO DE ESCRITA.\n");
-    #endif
+    // #ifdef DEBUG
+        // printf("--DISK: Retornou sinal para tarefa com o TÉRMINO da OPERAÇÃO DE ESCRITA.\n");
+    // #endif
     
     return 0;
 }

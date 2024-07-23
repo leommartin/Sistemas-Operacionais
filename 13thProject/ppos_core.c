@@ -49,6 +49,9 @@ disk_t disk;
 
 cpu_timer proc_timer;
 
+// print print_task_queue(ready_tasks_queue)
+// print print_task_queue((queue_t*)sleeping_tasks_queue)
+
 unsigned int systime()
 {
     return program_timer;
@@ -349,7 +352,7 @@ void disk_signal_handler(int signum)
     // Acorda o gerenciador de disco
 
     disk.signal = OPERATION_DONE;
-    task_awake(&disk_manager, &sleeping_tasks_queue);
+    // task_awake(&disk_manager, &sleeping_tasks_queue);
     #ifdef DEBUG
         // printf("\t--DEBUG: disk_signal_handler(): disk.signal = %d\n", disk.signal);
         printf("disk_signal_handler(): disk.signal = %d\n", disk.signal);
@@ -372,11 +375,11 @@ void set_disk_signal_handler()
 
 void diskDriverBody (void * args)
 {
-
     while (1) 
     {
         // obtém o semáforo de acesso ao disco 
         current_task = &disk_manager; 
+        current_task->status = RUNNING;
 
         #ifdef DEBUG
             printf("diskDriverBody(): current_task = %d\n", current_task->id);
@@ -392,15 +395,15 @@ void diskDriverBody (void * args)
         if(disk.signal == OPERATION_DONE) // se recebeu sinal de SIGUSR1 essa flag é ativada
         {
             // acorda a tarefa cujo pedido foi atendido
-            #ifdef DEBUG
-                printf("--DISK: Recebeu sinal de SIGUSR1.");
-            #endif
+            // #ifdef DEBUG
+                // printf("--DISK: Recebeu sinal de SIGUSR1.");
+            // #endif
             task_t *task_aux = disk_tasks_queue;
             task_awake(task_aux, &disk_tasks_queue);
             
-            #ifdef DEBUG
-                printf("--DISK: Acordou tarefa %d, cujo pedido foi atendido.\n", task_aux->id);
-            #endif
+            // #ifdef DEBUG
+                // printf("--DISK: Acordou tarefa %d, cujo pedido foi atendido.\n", task_aux->id);
+            // #endif
             disk.signal = 0; // reseta a flag para 0
         }
         
@@ -426,9 +429,9 @@ void diskDriverBody (void * args)
                     perror("Error while reading block from disk\n");
                     exit(1);
                 }
-                #ifdef DEBUG
+                // #ifdef DEBUG
                     printf("--DISK: Operação de LEITURA realizada.\n");
-                #endif
+                // #endif
                 // disk.signal = OPERATION_DONE;
             }
             else if(task_aux->rw_request.type == WRITE_OPERATION)
@@ -438,9 +441,9 @@ void diskDriverBody (void * args)
                     perror("Error while writing block to disk\n");
                     exit(1);
                 }
-                #ifdef DEBUG
+                // #ifdef DEBUG
                     printf("--DISK: Operação de ESCRITA realizada.\n");
-                #endif
+                // #endif
                 // disk.signal = OPERATION_DONE;
             }
             else
@@ -487,7 +490,7 @@ void ppos_init()
     task_init(disp, dispatcher, NULL);
 
     task_init(&disk_manager, diskDriverBody, NULL);
-    // print_task_queue(ready_tasks_queue);
+    print_task_queue(ready_tasks_queue);
 
     printf("\n\tInicializando semaforo de acesso ao disco...\n");
     sem_init(&sem_disk, 1);
@@ -849,11 +852,11 @@ void task_awake(task_t *task, task_t **queue)
         printf("\n\t--DEBUG: task_awake(): Task %d trying to remove T%d of the SLEEPING tasks queue\n", current_task->id, task->id);
         print_task_queue((queue_t*) *queue);
     #endif
-
     // se a fila queue não for nula, retira a tarefa apontada por task dessa fila
-    if (queue != NULL)
+    if (queue != NULL && *queue != NULL)
     {
-        queue_remove((queue_t **)queue, (queue_t *)task);
+        if(task_exists(task, (task_t*)*queue))
+            queue_remove((queue_t **)queue, (queue_t *)task);
     }
 
     #ifdef DEBUG
@@ -871,7 +874,9 @@ void task_awake(task_t *task, task_t **queue)
         print_task_queue(ready_tasks_queue);
     #endif
     // insere a tarefa na fila de tarefas prontas
-    queue_append(&ready_tasks_queue, (queue_t *)task);
+    // printf("task_awake() append\n");
+    if(!task_exists(task, (task_t*)ready_tasks_queue))
+        queue_append(&ready_tasks_queue, (queue_t *)task);
 
     #ifdef DEBUG
         printf("\t--DEBUG: READY tasks queue: ");
@@ -884,21 +889,29 @@ void task_awake(task_t *task, task_t **queue)
 // transferindo-a da fila de prontas para a fila "queue"
 void task_suspend (task_t **queue)
 {  
-    #ifdef DEBUG
-        printf("\t--DEBUG: task_suspend(): trying to REMOVE task %d of the READY tasks queue\n", current_task->id);
-        printf("\t--DEBUG: READY tasks queue: ");
-        print_task_queue(ready_tasks_queue);
-    #endif
-    
+    // #ifdef DEBUG
+        // printf("\t--DEBUG: task_suspend(): trying to REMOVE task %d of the READY tasks queue\n", current_task->id);
+        // printf("\t--DEBUG: READY tasks queue: ");
+        // print_task_queue(ready_tasks_queue);
+    // #endif
+
     // retira a tarefa atual da fila de tarefas prontas (se estiver nela);
     if(task_exists(current_task, (task_t*)ready_tasks_queue))
+    {
+        // printf("Removendo tarefa %d da fila de prontas\n", current_task->id);
+        // print_task_queue(ready_tasks_queue);
         queue_remove(&ready_tasks_queue, (queue_t*)current_task);
+        // print_task_queue(ready_tasks_queue);
+    }
 
-    #ifdef DEBUG
-        printf("\t--DEBUG: READY tasks queue: ");
-        print_task_queue(ready_tasks_queue);
-        printf("\n");
-    #endif
+    // printf("\t--DEBUG: READY tasks queue: ");
+    // print_task_queue(ready_tasks_queue);
+
+    // #ifdef DEBUG
+        // printf("\n After remove:\n\t--DEBUG: READY tasks queue: ");
+        // print_task_queue(ready_tasks_queue);
+        // printf("\n");
+    // #endif
     // #ifdef DEBUG
     //     printf("\t--DEBUG: task_suspend(): after task %d being removed of the READY tasks queue\n", current_task->id);
     //     print_task_queue(ready_tasks_queue);
@@ -915,7 +928,17 @@ void task_suspend (task_t **queue)
     // insere a tarefa atual na fila apontada por queue (se essa fila não for nula)
     if(queue != NULL)
     {
-        queue_append((queue_t**) queue, (queue_t*) current_task);
+        // printf("\t--DEBUG: READY tasks queue: ");
+        // print_task_queue(ready_tasks_queue);
+        if(task_exists(current_task, (task_t*)ready_tasks_queue))
+        {   
+            // printf("task_suspend() append\n");
+            queue_remove(&ready_tasks_queue, (queue_t*)current_task);
+        }
+        else
+        {
+            queue_append((queue_t**) queue, (queue_t*) current_task);
+        }
     }
 
     #ifdef DEBUG
