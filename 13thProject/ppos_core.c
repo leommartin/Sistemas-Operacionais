@@ -430,7 +430,7 @@ void diskDriverBody (void * args)
                     exit(1);
                 }
                 // #ifdef DEBUG
-                    printf("--DISK: Operação de LEITURA realizada.\n");
+                    // printf("--DISK: Operação de LEITURA realizada.\n");
                 // #endif
                 // disk.signal = OPERATION_DONE;
             }
@@ -442,7 +442,7 @@ void diskDriverBody (void * args)
                     exit(1);
                 }
                 // #ifdef DEBUG
-                    printf("--DISK: Operação de ESCRITA realizada.\n");
+                    // printf("--DISK: Operação de ESCRITA realizada.\n");
                 // #endif
                 // disk.signal = OPERATION_DONE;
             }
