@@ -490,9 +490,9 @@ void ppos_init()
     task_init(disp, dispatcher, NULL);
 
     task_init(&disk_manager, diskDriverBody, NULL);
-    print_task_queue(ready_tasks_queue);
+    // print_task_queue(ready_tasks_queue);
 
-    printf("\n\tInicializando semaforo de acesso ao disco...\n");
+    // printf("\n\tInicializando semaforo de acesso ao disco...\n");
     sem_init(&sem_disk, 1);
 
     set_handler();
@@ -855,7 +855,7 @@ void task_awake(task_t *task, task_t **queue)
     // se a fila queue não for nula, retira a tarefa apontada por task dessa fila
     if (queue != NULL && *queue != NULL)
     {
-        if(task_exists(task, (task_t*)*queue))
+        // if(task_exists(task, (task_t*)*queue))
             queue_remove((queue_t **)queue, (queue_t *)task);
     }
 
@@ -875,7 +875,7 @@ void task_awake(task_t *task, task_t **queue)
     #endif
     // insere a tarefa na fila de tarefas prontas
     // printf("task_awake() append\n");
-    if(!task_exists(task, (task_t*)ready_tasks_queue))
+    // if(!task_exists(task, (task_t*)ready_tasks_queue))
         queue_append(&ready_tasks_queue, (queue_t *)task);
 
     #ifdef DEBUG
@@ -930,15 +930,15 @@ void task_suspend (task_t **queue)
     {
         // printf("\t--DEBUG: READY tasks queue: ");
         // print_task_queue(ready_tasks_queue);
-        if(task_exists(current_task, (task_t*)ready_tasks_queue))
-        {   
-            // printf("task_suspend() append\n");
-            queue_remove(&ready_tasks_queue, (queue_t*)current_task);
-        }
-        else
-        {
+        // if(task_exists(current_task, (task_t*)ready_tasks_queue))
+        // {   
+        //     // printf("task_suspend() append\n");
+        //     queue_remove(&ready_tasks_queue, (queue_t*)current_task);
+        // }
+        // else
+        // {
             queue_append((queue_t**) queue, (queue_t*) current_task);
-        }
+        // }
     }
 
     #ifdef DEBUG
